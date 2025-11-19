@@ -1,0 +1,882 @@
+{% extends "base.html" %} {% block title %}Game Dashboard{% endblock %} {% block
+content %}
+<style>
+  .game-map-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+
+  .game-stats {
+    background-color: #eee;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  body {
+    background-color: #ffffff;
+  }
+</style>
+
+<div class="main-content" style="margin-bottom: 20px">
+  <h1 class="text-center" style="margin-top: 50px; margin-bottom: 50px">
+    EXAM SIMULATING ({{ state.role }} - {{ state.team }})
+  </h1>
+  </div>
+  <div class="activity-feed mt-4">
+    <ul class="nav nav-tabs" id="logTabs" role="tablist">
+      {% if is_gamemaster %}
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#gm-team-a" type="button">🔴 Team A</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#gm-team-b" type="button">🔵 Team B</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#global-log" type="button">🌐 Global</button></li>
+      {% else %}
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#team-log" type="button">Team Activity</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#global-log" type="button">Global Events</button></li>
+      {% endif %}
+    </ul>
+
+    <div class="tab-content" style="border: 1px solid #dee2e6; border-top: 0; padding: 15px; background: #fff;">
+
+      {% if is_gamemaster %}
+          <div class="tab-pane fade show active" id="gm-team-a">
+             <div class="card mb-2"><div class="card-body p-2" id="gm-team-a-chat" style="height: 150px; overflow-y: auto;"></div></div>
+             <form class="gm-chat-form mb-3" data-team="TeamA">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" placeholder="Send to Team A...">
+                    <button class="btn btn-danger" type="submit">Send</button>
+                </div>
+             </form>
+             <hr><div id="gm-team-a-log" style="height: 100px; overflow-y: auto;"></div>
+          </div>
+
+          <div class="tab-pane fade" id="gm-team-b">
+             <div class="card mb-2"><div class="card-body p-2" id="gm-team-b-chat" style="height: 150px; overflow-y: auto;"></div></div>
+             <form class="gm-chat-form mb-3" data-team="TeamB">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" placeholder="Send to Team B...">
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </div>
+             </form>
+             <hr><div id="gm-team-b-log" style="height: 100px; overflow-y: auto;"></div>
+          </div>
+      {% else %}
+          <div class="tab-pane fade show active" id="team-log">
+             <div class="card mb-3">
+                <div class="card-header py-2 px-3 bg-light"><strong>💬 Team Chat</strong></div>
+                <div class="card-body" id="team-chat-container" style="height: 150px; overflow-y: auto; padding: 10px;"></div>
+             </div>
+             <div class="card">
+                <div class="card-header py-2 px-3 bg-light"><strong>📋 Activity Log</strong></div>
+                <div class="card-body" id="team-log-container" style="height: 100px; overflow-y: auto; padding: 10px;"></div>
+             </div>
+          </div>
+      {% endif %}
+
+      <div class="tab-pane fade" id="global-log">
+         <div class="card mb-3">
+            <div class="card-header py-2 px-3 bg-light"><strong>🌐 Global Chat</strong></div>
+            <div class="card-body" id="global-chat-container" style="height: 150px; overflow-y: auto; padding: 10px;"></div>
+         </div>
+         <div class="card">
+            <div class="card-header py-2 px-3 bg-light"><strong>🌍 Event Log</strong></div>
+            <div class="card-body" id="global-log-container" style="height: 100px; overflow-y: auto; padding: 10px;"></div>
+         </div>
+      </div>
+    </div>
+
+    {% if not is_gamemaster %}
+    <div class="chat-inputs mt-2">
+        <form id="team-chat-form" class="mb-2">
+            <div class="input-group">
+                <input type="text" id="team-chat-input" class="form-control form-control-sm" placeholder="Send to Team..." autocomplete="off">
+                <button class="btn btn-outline-primary btn-sm" type="submit">Send</button>
+            </div>
+        </form>
+        <form id="global-chat-form">
+            <div class="input-group">
+                <input type="text" id="global-chat-input" class="form-control form-control-sm" placeholder="Send to Global..." autocomplete="off">
+                <button class="btn btn-outline-secondary btn-sm" type="submit">Send All</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="mt-2">
+        <form id="global-chat-form">
+            <div class="input-group">
+                <input type="text" id="global-chat-input" class="form-control form-control-sm" placeholder="Broadcast to Global..." autocomplete="off">
+                <button class="btn btn-secondary btn-sm" type="submit">BroadCast</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+  </div>
+    <div class="game-stats">
+    <h3>Current State: '{{ state.current_location }}'</h3>
+    <ul>
+      <li><strong>Game Status:</strong> {{ state.game_status }}</li>
+      {% if state.role == 'Seeker' %}
+      <li>
+        <strong>Spirit Guardian:</strong>
+        {% if state.spirit_class == 'Dragon' %}
+            <span style="color: #198754; font-weight: bold;">🟢 Thanh Long</span>
+        {% elif state.spirit_class == 'Tiger' %}
+            <span style="color: #6c757d; font-weight: bold;">⚪ Bạch Hổ</span>
+        {% elif state.spirit_class == 'Bird' %}
+            <span style="color: #dc3545; font-weight: bold;">🔴 Chu Tước</span>
+        {% elif state.spirit_class == 'Tortoise' %}
+            <span style="color: #212529; font-weight: bold;">⚫ Huyền Vũ</span>
+        {% else %}
+            Unknown
+        {% endif %}
+      </li>
+      {% endif %}
+      <li>
+        <strong>Water Bar:</strong> {{ "%.2f"|format(state.current_water) }} /
+        10.00
+      </li>
+      <li><strong>Search Turns:</strong> {{ state.search_turns_left }} / 1</li>
+      <li><strong>Gather Turns:</strong> {{ state.gather_turns_left }} / 2 (Daily Reset)</li>
+      <li><strong>Detect Turns:</strong> {{ state.detect_turns_left }} / 2 (Daily Reset)</li>
+      <li><strong>Take water Turns:</strong> {{ state.take_water_turns_left }} / 1 (Daily Reset)</li>
+    </ul>{% if state.user_id == state.room.host_id %}<hr><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch"
+             id="violenceToggleSwitch"
+             {% if violence_enabled %}checked{% endif %}><label class="form-check-label" for="violenceToggleSwitch">Enable Violence Feature (Host Only)</label></div>
+    {% endif %}
+  </div>
+  <div
+    class="image-container mx-auto"
+    style="
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 920px;
+    "
+  >
+    <div class="text-center d-inline-block" style="flex-basis: 450px">
+      <img
+        src="{{ url_for('static', filename='images/map.png') }}"
+        alt="Indeed Map"
+        style="width: 100%; height: auto; border-radius: 10px"
+      />
+    </div>
+    <div class="game-map-container text-center d-inline-block" style="flex-basis: 450px">
+        {% if plot_image %}    <img
+        src="data:image/png;base64,{{ plot_image }}"
+        alt="Exam Map"
+        style="
+          width: 100%;
+          height: auto;
+          border-radius: 10px;
+          display: inline-block;
+        "
+      />
+        {% else %}          
+      <div class="alert alert-warning">Error Occurs</div>
+        {% endif %}  
+    </div>
+  </div>
+  {% if not is_gamemaster %}
+  <div class="game-actions" style="margin-top: 20px; margin-bottom: 100px">
+
+  <div class="game-actions" style="margin-top: 20px; margin-bottom: 100px">
+    <div class="d-flex justify-content-end mb-2">
+        <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#inventoryOffcanvas" aria-controls="inventoryOffcanvas">
+            🎒 Inventory
+            {% if state.has_remote_water or state.has_teleport or state.has_quynh_tam_thao or state.has_ly_sau_thao or state.has_nhat_nguyet_thao or state.has_seawater_purifier %}
+            <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                <span class="visually-hidden">New alerts</span>
+            </span>
+            {% endif %}
+        </button>
+    </div>
+    <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+    <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+      <input type="hidden" name="action" value="move" />
+      <div class="mb-3">
+        <label for="new_location" class="form-label"
+          >Move to (e.g., '4j10'):</label
+        >
+        <input
+          type="text"
+          class="form-control"
+          name="new_location"
+          id="new_location"
+        />
+      </div>
+        <button type="submit" class="btn btn-primary" {% if state.role == 'Hider' %}disabled{% endif %}>Move</button>
+    </form>
+
+    <hr />
+
+    <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+      <button type="submit" name="action" value="search" class="btn btn-info" {%
+      if state.role == 'Hider' or state.search_turns_left <= 0 %}disabled{%
+      endif %}> Search ({{ state.search_turns_left }} left)
+       </button>
+
+<button type="submit" name="action" value="detect" class="btn btn-warning"
+            {% if state.role == 'Hider' or state.detect_turns_left <= 0 %}disabled{% endif %}>
+      Detect ({{ state.detect_turns_left }} left)
+        </button>
+        {% if show_track_button %}<button type="submit" name="action" value="track" class="btn btn-dark">
+             Track
+        </button>
+        {% endif %}
+      <button type="submit" name="action" value="gather" class="btn btn-success"
+      {% if state.role == 'Hider' or state.gather_turns_left <= 0 %}disabled{%
+      endif %}> Gather ({{ state.gather_turns_left }} left)</button>
+      {% if can_take_water %}<button
+        type="submit"
+        name="action"
+        value="take_water"
+        class="btn btn-info"
+          {% if state.take_water_turns_left <= 0 %}disabled{% endif %}
+      >Take Water ({{ state.take_water_turns_left }} left)</button>
+      {% endif %}
+      {% if show_purify_button %}
+      <button type="submit" name="action" value="purify_water" class="btn btn-info"
+              onclick="return confirm('Are you sure you want to use \'Hải tâm thanh tịnh thảo\' ? Item will be consumed.')">
+          Take seawater
+      </button>
+      {% endif %} {% if show_transfer_button %}<button
+        type="button"
+        class="btn btn-outline-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#transferWaterModal"
+      >Transfer Water</button
+      >{% endif %}
+      {% if show_teleport_button %}
+        <button type="button" class="btn btn-info"
+                data-bs-toggle="modal" data-bs-target="#teleportModal">
+           Teleport
+        </button>
+        {% endif %}
+        {% if show_gambit_button %}
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#gambitModal">Hider's Gambit</button>
+        {% endif %}
+        {% if state.has_u_tam_thao %}
+      <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#setTrapModal">
+           Set Trap
+      </button>
+      {% endif %}
+      {% if state.has_phan_thien_thao %}
+      <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#discloseTraceModal">
+           Disclose Trace
+      </button>
+      {% endif %}
+        <button type="button" class="btn btn-danger"
+                {% if state.role == 'Seeker' %}disabled{% endif %}
+                data-bs-toggle="modal" data-bs-target="#surrenderModal">
+            Surrender
+        </button>
+      {% if state.room.host_id == user.id %}<button
+        type="submit"
+        name="action"
+        value="restore"
+        class="btn btn-warning"
+        onclick="return confirm('WARNING: Are you sure you want to restore this current room?')"
+      >Restore Game</button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endif %}
+{% if is_gamemaster %}
+<div class="card mt-3 border-warning" style="margin-bottom: 100px">
+    <div class="card-header bg-warning">👑 Gamemaster Control Panel</div>
+    <div class="card-body">
+        <h5>Player Stats</h5>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th><th>Team</th><th>Spirit</th><th>Role</th><th>Water</th><th>Status</th><th>Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in all_players %}
+                    {% if p.role != 'Gamemaster' %}
+                    <tr>
+                        <td>{{ p.user.first_name }}</td>
+                        <td class="{{ 'text-danger' if p.team == 'TeamA' else 'text-primary' }}">{{ p.team }}</td>
+                        <td>{{ p.spirit_class }}</td>
+                        <td>{{ p.role }}</td>
+                        <td>{{ "%.2f"|format(p.current_water) }}</td>
+                        <td>{{ p.game_status }}</td>
+                        <td>
+                            {% if p.has_remote_water %}<span title="Tương tư đoạn trường thảo">💧</span>{% endif %}
+                            {% if p.has_teleport %}<span title="Thượng quan tử uyển thảo">⚡</span>{% endif %}
+                            {% if p.has_quynh_tam_thao %}<span title="Quỳnh tâm hoán mệnh thảo">❤️</span>{% endif %}
+                            {% if p.has_ly_sau_thao %}<span title="Ly sầu tán phách thảo">🗺️</span>{% endif %}
+                            {% if p.has_nhat_nguyet_thao %}<span title="Nhật nguyệt tinh luân thảo">👻</span>{% endif %}
+                            {% if p.has_u_tam_thao %}<span title="U tâm tịch diệt thảo">🪤</span>{% endif %}
+                            {% if p.has_phan_thien_thao %}<span title="Phần thiên truy long thảo">👁️</span>{% endif %}
+                            {% if p.has_seawater_purifier %}<span title="Hải tâm thanh tịnh thảo">🧪</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        <div class="d-flex gap-2 align-items-center">
+
+             <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+                <input type="hidden" name="action" value="restore">
+                <button type="submit" class="btn btn-warning" onclick="return confirm('WARNING: Are you sure you want to RESET this entire room? Data will be erased.')">
+                     Restore Game
+                </button>
+             </form>
+
+             <div class="form-check form-switch ms-3">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="violenceToggleSwitch"
+                       {% if violence_enabled %}checked{% endif %}>
+                <label class="form-check-label" for="violenceToggleSwitch">Enable Violence</label>
+             </div>
+
+        </div>
+</div>
+{% endif %}
+<div
+  class="modal fade"
+  id="transferWaterModal"
+  tabindex="-1"
+  aria-labelledby="transferModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+        <input type="hidden" name="action" value="transfer_water" />
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="transferModalLabel"> Transfer Water</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <p>Select a teammate to transfer water to.</p>
+
+          <div class="mb-3">
+            <label for="receiver_id" class="form-label">Teammate:</label>
+            <select
+              name="receiver_id"
+              id="receiver_id"
+              class="form-select"
+              required
+            >
+              {% for teammate in all_teammates %}
+              <option value="{{ teammate.user.id }}">
+                {{ teammate.user.first_name }} {% if teammate.current_location
+                == state.current_location %} (Local) {% elif
+                state.has_remote_water %} (Remote: {{ teammate.current_location
+                }}) {% else %} disabled {% endif %}
+              </option>
+              {% endfor %}
+            </select>
+            {% if state.has_remote_water %}
+            <div class="form-text" style="color: #0d6efd">
+              (Remote transfer will consume your item)
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amount"
+              name="amount"
+              step="0.01"
+              min="0.01"
+              max="{{ max_transferable_water }}"
+              placeholder="Max: {{ max_transferable_water }}"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Send Water</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</div>
+<div class="modal fade" id="teleportModal" tabindex="-1" aria-labelledby="teleportModalLabel" aria-hidden="true"> <!--MODAL 2-->
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+
+      <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+        <input type="hidden" name="action" value="teleport">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="teleportModalLabel">⚡ Use Teleport Item</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <p>Select a destination. This costs no water and consumes your 'Thượng quan tử uyển thảo'.</p>
+
+          <div class="mb-3">
+            <label for="teleport_location" class="form-label">Destination Coordinate:</label>
+            <input type="text"
+                   class="form-control"
+                   id="teleport_location"
+                   name="teleport_location"
+                   placeholder="e.g., 4j10"
+                   required>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Teleport (Consume Item)</button>
+        </div>
+
+      </form> </div>
+  </div>
+</div>
+<div class="modal fade" id="gambitModal" tabindex="-1" aria-labelledby="gambitModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning"> <h5 class="modal-title text-dark" id="gambitModalLabel">⚠️ Confirm Hider's Gambit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>WARNING:</strong> This action will reveal <strong>PUBLICLY</strong> your Main Square for all contestants.</p>
+        <p>In return, your team's surviving Seekers will receive a buff for each (+1 Search turn, +1 Gather turn).</p>
+        <p>Are you sure you want to make this risky move?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+        <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+            <input type="hidden" name="action" value="emit_signal">
+            <button type="submit" class="btn btn-warning">⚡ Activate Gambit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="surrenderModal" tabindex="-1" aria-labelledby="surrenderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white"> <h5 class="modal-title" id="surrenderModalLabel">🚨 Confirmation of Surrender</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to surrender?</p>
+        <p class="text-danger"><strong>CONSEQUENCE:</strong> Your team will <strong>LOSE</strong> immediately. Your team's surviving Seekers will be deducted 10pt each but you lose nothing!</p>
+        <p>You cannot undo this action.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+        <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+            <input type="hidden" name="action" value="surrender">
+            <button type="submit" class="btn btn-danger">🏳️ Confirm Resign</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="offcanvas offcanvas-end" tabindex="-1" id="inventoryOffcanvas" aria-labelledby="inventoryOffcanvasLabel">
+  <div class="offcanvas-header bg-success text-white">
+    <h5 class="offcanvas-title" id="inventoryOffcanvasLabel">🎒 Your inventory</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+
+    {% set has_any_item = False %}
+    <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
+        <i class="fa fa-eye me-2"></i>
+        <div>
+            <strong>Detect Turns:</strong> {{ state.detect_turns_left }}
+            {% if state.detect_turns_left > 2 %}
+            <br><small class="text-muted">(Including the extra buff from Trầm tương vọng nguyệt thảo)</small>
+            {% endif %}
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+
+      {% if state.has_remote_water %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-primary">Tương tư đoạn trường thảo</div>
+            <small class="text-muted">Allow to remotely transfer water (1 turn).</small>
+        </div>
+        <span class="badge bg-primary rounded-pill">1</span>
+      </div>
+      {% endif %}
+
+      {% if state.has_teleport %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-info">Thượng quan tử uyển thảo</div>
+            <small class="text-muted">Teleport (1 turn).</small>
+        </div>
+        <span class="badge bg-info text-dark rounded-pill">1</span>
+      </div>
+      {% endif %}
+
+      {% if state.has_quynh_tam_thao %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-success">Quỳnh tâm hoán mệnh thảo</div>
+            <small class="text-muted">Revive you with 5.0 water bars as soon as you are terminated due to running out of water (Passive).</small>
+        </div>
+        <span class="badge bg-success rounded-pill">1</span>
+      </div>
+      {% endif %}
+
+      {% if state.has_ly_sau_thao %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-danger">Ly sầu tán phách thảo</div>
+            <small class="text-muted">Show beasts on the map (Passive and Permanent).</small>
+        </div>
+        <span class="badge bg-danger rounded-pill">1</span>
+      </div>
+      {% endif %}
+
+      {% if state.has_nhat_nguyet_thao %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold" style="color: purple;">Nhật nguyệt tinh luân thảo</div>
+            <small class="text-muted">Immune to be Detected (Passive).</small>
+        </div>
+        <span class="badge rounded-pill" style="background-color: purple;">1</span>
+      </div>
+      {% endif %}
+
+      {% if state.has_u_tam_thao %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-dark">U tâm tịch diệt thảo</div>
+            <small class="text-muted">Set a trap cause 3.0 water losing. (1 Turn).</small>
+        </div>
+        <span class="badge bg-dark rounded-pill">1</span>
+      </div>
+      {% endif %}
+      {% if state.has_phan_thien_thao %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-warning">Phần Thiên Truy Long Thảo</div>
+            <small class="text-muted">Disclose enemy's traces (1 Turn).</small>
+        </div>
+        <span class="badge bg-warning text-dark rounded-pill">1</span>
+      </div>
+      {% endif %}
+      {% if state.has_seawater_purifier %}
+      {% set has_any_item = True %}
+      <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <div class="fw-bold text-primary">Hải tâm thanh tịnh thảo</div>
+            <small class="text-muted">Leach Seawater (1 turn).</small>
+        </div>
+        <span class="badge bg-primary rounded-pill">1</span>
+      </div>
+      {% endif %}
+
+    </div>
+
+    {% if not has_any_item %}
+        <div class="text-center mt-5 text-muted">
+            <i class="fa fa-shopping-basket fa-3x mb-3"></i>
+            <p>Your inventory is empty.</p>
+            <small>Use action <strong>Gather</strong> to find some!</small>
+        </div>
+    {% endif %}
+
+  </div>
+</div>
+<div class="modal fade" id="setTrapModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+        <input type="hidden" name="action" value="set_trap">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">🪤 Set trap</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Enter a partial square to set a trap from "U tâm tịch diệt thảo".</p>
+          <small class="text-danger mb-2 d-block">* Do not set in a partial square with seawater.</small>
+          <div class="mb-3">
+            <input type="text" class="form-control" name="trap_coordinate" placeholder="For example: 4f5" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-dark">Set trap (Item Consumed)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="discloseTraceModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('views.game_dashboard') }}">
+        <input type="hidden" name="action" value="disclose_trace">
+
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title text-dark">👁️ Disclose Trace</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <p>Select a surviving opposite seeker to reveal his trace history today.</p>
+
+          <div class="mb-3">
+            <label class="form-label">Target:</label>
+            <select name="target_id" class="form-select" required>
+              {% for player in players_in_room %}
+                {% if player.team != state.team and player.role == 'Seeker' and player.game_status == 'Active' %}
+                  <option value="{{ player.user_id }}">{{ player.user.first_name }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="submit" class="btn btn-warning">Disclose (Item Consumed)</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const teamLogContainer = document.getElementById('team-log-container');
+    const globalLogContainer = document.getElementById('global-log-container');
+    const teamChatContainer = document.getElementById('team-chat-container');
+    const globalChatContainer = document.getElementById('global-chat-container');
+
+    const teamChatForm = document.getElementById('team-chat-form');
+    const globalChatForm = document.getElementById('global-chat-form');
+
+    const teamChatInput = document.getElementById('team-chat-input');
+    const globalChatInput = document.getElementById('global-chat-input');
+
+    const modalEl = document.getElementById('violenceReportModal');
+    const modalBody = document.getElementById('violenceReportModalBody');
+    let violenceModal = null;
+    if (modalEl) {
+        violenceModal = new bootstrap.Modal(modalEl);
+    }
+
+    const violenceToggle = document.getElementById('violenceToggleSwitch');
+    let isPollingEnabled = {{ violence_enabled | tojson }};
+
+
+    function renderLogs(container, logs) {
+        if (!container) return;
+        container.innerHTML = '';
+        if (!logs || logs.length === 0) {
+            container.innerHTML = '<p class="text-muted small m-0">No new activity.</p>';
+            return;
+        }
+        let html = '';
+        logs.forEach(log => {
+            html += `<div class="log-entry small border-bottom pb-1 mb-1">
+                        <strong style="color: #6c757d;">[${log.timestamp}]</strong>
+                        <span>${log.message}</span>
+                     </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function renderChat(container, messages) {
+        if (!container) return;
+        container.innerHTML = '';
+        if (!messages || messages.length === 0) {
+            container.innerHTML = '<p class="text-muted small m-0">No messages yet.</p>';
+            return;
+        }
+
+        let html = '';
+        messages.forEach(msg => {
+            const align = msg.is_self ? 'text-end' : 'text-start';
+            const bubble = msg.is_self ? 'bg-primary text-white' : 'bg-light text-dark';
+            const name = msg.is_self ? 'You' : msg.user_name;
+
+            html += `<div class="log-entry small mb-2 ${align}">
+                        <div class="d-inline-block p-2 rounded ${bubble}" style="max-width: 80%; text-align: left;">
+                            <strong style="opacity: 0.7;">${name}</strong>
+                            <div>${msg.message}</div>
+                            <div style="font-size: 0.8em; opacity: 0.6;">${msg.timestamp}</div>
+                        </div>
+                     </div>`;
+        });
+        container.innerHTML = html;
+        container.scrollTop = container.scrollHeight;
+    }
+
+
+    async function sendChatMessage(scope, inputElement, targetTeam = null) {
+        const message_body = inputElement.value.trim();
+        if (message_body === '') return;
+        inputElement.disabled = true;
+
+        try {
+            const payload = { message_body: message_body, scope: scope };
+            if (targetTeam) payload.target_team = targetTeam;
+
+            const response = await fetch('/api/send_chat_message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if (data.success) {
+                inputElement.value = '';
+                fetchActivityFeed();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (e) { console.error(e); }
+        finally {
+            inputElement.disabled = false;
+            inputElement.focus();
+        }
+    }
+
+    async function fetchActivityFeed() {
+        try {
+            const response = await fetch('/api/get_activity_feed');
+            if (!response.ok) return;
+            const data = await response.json();
+
+
+            renderLogs(globalLogContainer, data.global_logs);
+            renderChat(globalChatContainer, data.global_chat);
+
+            if (data.is_gamemaster) {
+                renderLogs(document.getElementById('gm-team-a-log'), data.team_a_logs);
+                renderChat(document.getElementById('gm-team-a-chat'), data.team_a_chat);
+
+                renderLogs(document.getElementById('gm-team-b-log'), data.team_b_logs);
+                renderChat(document.getElementById('gm-team-b-chat'), data.team_b_chat);
+            } else {
+                renderLogs(teamLogContainer, data.team_logs);
+                renderChat(teamChatContainer, data.team_chat);
+            }
+        } catch (e) { console.error("Polling error:", e); }
+    }
+
+    async function fetchNotifications() {
+        if (!isPollingEnabled) {
+            return;
+        }
+        try {
+            const response = await fetch('/api/get_notifications');
+            if (!response.ok) return;
+
+            const results = await response.json();
+
+            if (results && results.length > 0 && violenceModal) {
+                let html = '<p>An event occurred:</p><ul>';
+                results.forEach(res => {
+                    html += `<li>${res.message}</li>`;
+                });
+                html += '</ul><p>No penalties applied at this time.</p>';
+
+                if (modalBody) modalBody.innerHTML = html;
+                violenceModal.show();
+            }
+        } catch (e) {
+            console.error("Error caused by polling notification:", e);
+        }
+    }
+
+
+    const gmForms = document.querySelectorAll('.gm-chat-form');
+    gmForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = this.querySelector('input');
+            const targetTeam = this.getAttribute('data-team');
+            sendChatMessage('team', input, targetTeam);
+        });
+    });
+
+
+    if (teamChatForm) {
+        teamChatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            sendChatMessage('team', teamChatInput);
+        });
+    }
+
+    if (globalChatForm) {
+        globalChatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            sendChatMessage('global', globalChatInput);
+        });
+    }
+
+
+    if (violenceToggle) {
+        violenceToggle.addEventListener('change', async function() {
+            const newStatus = this.checked;
+            try {
+                const response = await fetch('/api/toggle_violence', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ enabled: newStatus })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    isPollingEnabled = data.new_status;
+                    console.log("Violence Polling Toggled: " + isPollingEnabled);
+                } else {
+                    alert(data.message);
+                    this.checked = !newStatus;
+                }
+            } catch (e) {
+                console.error("Error toggling violence:", e);
+                this.checked = !newStatus;
+            }
+        });
+    }
+
+
+    fetchActivityFeed();
+    setInterval(fetchActivityFeed, 5000);
+    setInterval(fetchNotifications, 5000);
+
+});
+</script>
+{% endblock %}

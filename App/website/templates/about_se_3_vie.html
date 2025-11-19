@@ -1,0 +1,518 @@
+{% extends "base.html" %} {% block title %}Luật Thi Đấu Kỳ Thi Đặc Biệt Lần 3{%
+endblock %} {% block content %}
+<style>
+  .rules-container {
+    padding-left: 40px;
+    padding-right: 40px;
+    line-height: 1.6;
+  }
+  .rules-section {
+    margin-bottom: 2rem;
+  }
+  .rules-section h2 {
+    margin-bottom: 15px;
+  }
+  .rules-section ul {
+    padding-left: 40px;
+  }
+  .rules-section ul.nested-list {
+    padding-left: 50px;
+    list-style-type: " + ";
+  }
+  .title-frame {
+    display: inline-block;
+    border: 2px solid #888;
+    padding: 10px 25px;
+    border-radius: 8px;
+    background-color: #ffe100;
+    color: #ee3636;
+  }
+  body {
+    background-color: #fcffd5;
+  }
+</style>
+
+<div class="rules-container">
+  <div class="text-center">
+    <h1 class="title-frame">KỲ THI ĐẶC BIỆT 3 (HIDE AND SEEK FRIENDSHIP)</h1>
+  </div>
+
+  <div class="rules-section">
+    <h2>💥 Nội dung:</h2>
+    <ul class="rules-list">
+      <li>
+        6 thí sinh được chia thành 2 nhóm để chơi trò trốn tìm trên đảo. Mỗi
+        nhóm chọn 1 người làm Hider (Người trốn) và những người còn lại sẽ là
+        Seeker (Người tìm) đi săn Hider của đội đối thủ.
+      </li>
+      <li>
+        Khi kỳ thi bắt đầu, Hider mỗi bên chọn một
+        <strong>Partial Square</strong> (ô nhỏ) để trốn và sẽ không được phép di
+        chuyển trong suốt kỳ thi. Sau đó, các Seeker chọn một ô bất kỳ để bắt
+        đầu.
+      </li>
+      <li>
+        Các Seeker được phép di chuyển (Move) hoặc đứng yên tại chỗ bất cứ lúc
+        nào. Ngoài ra, Seeker có thể thực hiện <strong>Search</strong> (Tìm
+        kiếm) tại ô mình đang đứng để xem có Hider của đối thủ ở đó không. Mỗi
+        Seeker chỉ có duy nhất <strong>1 lượt Search</strong> trong cả kỳ thi.
+      </li>
+      <li>
+        Hider có quyền chọn đầu hàng (Surrender). Khi chọn, nhóm đó sẽ thua cuộc
+        ngay lập tức. Các Seeker của nhóm thua sẽ bị trừ 10 điểm mỗi người,
+        trong khi Hider không bị trừ điểm.
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>🦄 Cơ chế:</h2>
+    <ul class="rules-list">
+      <li>
+        Các thí sinh trên đảo sẽ liên tục mất nước theo thời gian thực. Khi
+        thanh nước tụt về 0, thí sinh đó sẽ bị loại (Eliminated). (Nếu Hider bị
+        loại do hết nước, người đó sẽ bị phạt 10 điểm và người có nhiều nước
+        nhất trong nhóm đó sẽ buộc phải thế chỗ làm Hider ngay tại vị trí đang
+        đứng. Nếu không còn ai sống sót, nhóm đó thua cuộc).
+      </li>
+      <li>
+        Các Seeker đi qua ô có nước và thực hiện <strong>Take Water</strong> sẽ
+        được hồi đầy thanh nước (1 lượt lấy nước mỗi ngày). Các thí sinh cũng có
+        thể chuyển nước (Transfer Water) cho nhau.
+      </li>
+      <li>
+        Mỗi ngày, Seeker có 2 lượt sử dụng <strong>Detect</strong> (Dò tìm) để
+        biết trạng thái vị trí của các Seeker đối thủ. Detect chỉ có thể sử dụng
+        từ <strong>7:00 sáng đến 10:00 tối</strong> giờ thực (ngoài khung giờ
+        này, hành động này sẽ bị khóa).
+      </li>
+      <li>
+        <strong>Hider's Gambit (Nước Cờ Của Hider):</strong>
+        Hider có thể chọn kích hoạt khả năng mạnh mẽ nhưng đầy rủi ro này một
+        lần duy nhất trong kỳ thi.
+        <ul class="nested-list">
+          <li>
+            <strong>Cái giá phải trả (The Gambit):</strong> Khi kích hoạt, tọa
+            độ <strong>Main Square</strong> (Ô lớn) chính xác của Hider (ví dụ:
+            <code>e4</code>) sẽ ngay lập tức bị tiết lộ cho
+            <strong>tất cả thí sinh</strong> qua một thông báo công khai.
+          </li>
+          <li>
+            <strong>Phần thưởng (The Payout):</strong> Đổi lại sự hy sinh này,
+            tất cả Seeker còn sống trong team của Hider sẽ ngay lập tức nhận
+            được <strong>+1 Lượt Search</strong> và
+            <strong>+1 Lượt Gather</strong>. Khả năng này chỉ dùng được nếu
+            Hider chưa từng dùng trước đó.
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>💡 Định nghĩa:</h2>
+    <ul class="rules-list">
+      <li>
+        <strong>Coordinate (Tọa độ):</strong> Có 3 loại tọa độ:
+        <ul class="nested-list">
+          <li>
+            <strong>Main squares (Ô lớn):</strong> Một ô vuông được định nghĩa
+            trực tiếp bởi hàng và cột (như bàn cờ vua). Nó là một trong 100 ô cơ
+            bản tạo nên lưới 10x10 của bản đồ. Hàng được đánh số từ 1 đến 10,
+            cột từ A đến J. Ví dụ: ‘e4’, ‘f5’, ‘j10’.
+          </li>
+          <li>
+            <strong>Partial squares (Ô nhỏ):</strong> Là một trong 4 góc phần tư
+            chia nhỏ của một Main Square. Trên bản đồ, nếu Main Square là 'e4',
+            thì 4 ô nhỏ của nó được gọi là '1e4', '2e4', '3e4', và '4e4'.
+          </li>
+          <li>
+            <strong>Super squares (Ô siêu lớn):</strong> Một vùng bao gồm 9 Main
+            Squares. Nó được đặt tên theo Main Square nằm ở trung tâm (viết
+            hoa), với 8 ô khác bao quanh. Ví dụ: Super square E4 bao gồm ô e4 ở
+            giữa, bao quanh bởi d3, d4, d5, e3, e5, f3, f4, f5.
+          </li>
+        </ul>
+        <div class="text-center">
+          <img
+            src="{{ url_for('static', filename='images/map_explain.png') }}"
+            alt="Map Explanation"
+            style="width: 75%; height: auto; border-radius: 10px"
+          />
+          <p>Giải thích Tọa độ</p>
+        </div>
+      </li>
+      <li>
+        <strong>Inactive (Bất động):</strong> Trạng thái inactive được định
+        nghĩa là không thực hiện bất kỳ hành động nào gửi yêu cầu lên máy chủ
+        (tức là không nhấn các nút bên dưới cùng như Move, Search, Detect...).
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>🦂 Thưởng và ❄️ Phạt:</h2>
+    <ul class="rules-list">
+      <li>
+        Đội thắng nhận được 60 điểm chia đều cho các thành viên còn sống sót.
+        Đội thua bị trừ 5 điểm mỗi người.
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>🚨 Lưu ý:</h2>
+    <ul class="rules-list">
+      <li>
+        Thí sinh bắt đầu với 10 thanh nước. Tốc độ mất nước: 1 thanh mỗi 6 giờ.
+        Thanh nước có thể là số thập phân.
+      </li>
+      <li>
+        Không thể uống, trốn, hay di chuyển vào các ô Partial Square là Nước
+        biển (Seawater).
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>📑 Tham khảo thêm:</h2>
+    <ul class="rules-list">
+      <li>
+        Tốc độ di chuyển: Khoảng cách giữa 2 ô nhỏ được tính là khoảng cách giữa
+        tâm của chúng.
+      </li>
+      <li>Thời gian để di chuyển từ 4a10 đến 2j1 là 6 giờ.</li>
+      <li>
+        Tất cả các ô (lớn hoặc nhỏ) có Nước ngọt: 3c3, 4c3, 1c4, 2c4, 3d4, 4d4,
+        d5, 1d6, 2d6, 1e6.
+      </li>
+      <li>Ngoài ra, còn có một số điều đặc biệt khác trong kỳ thi.</li>
+    </ul>
+  </div>
+
+  <div class="text-center">
+    <img
+      src="{{ url_for('static', filename='images/map.png') }}"
+      alt="Indeed Map"
+      style="width: 75%; height: auto; border-radius: 10px"
+    />
+    <p>Bản đồ Thực tế</p>
+  </div>
+
+  <div class="rules-section">
+    <h2>🔐 Những Điều Đặc Biệt:</h2>
+    <ul class="rules-list">
+      <li>
+        <strong>Wild Beast Territories (Bất lợi):</strong>
+        <ul class="nested-list">
+          <li>
+            Một khu vực rừng rậm trên đảo (được định nghĩa bởi các Main Squares:
+            <strong>'c6', 'h4', 'e8', 'i8'</strong>) được biết đến là rất nguy
+            hiểm. Khi kỳ thi bắt đầu, 2 trong số 4 ô này sẽ được chọn ngẫu nhiên
+            và bí mật làm <strong>Lãnh thổ Quái thú</strong>.
+          </li>
+          <li>
+            Nếu đường di chuyển của Seeker cắt qua một trong hai lãnh thổ đang
+            hoạt động này, họ sẽ bị phục kích.
+          </li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              Seeker bị phục kích sẽ ngay lập tức bị phạt mất thêm
+              <strong>1.0 thanh nước</strong>.
+            </li>
+            <li>
+              Hơn nữa, tọa độ điểm đến cuối cùng của họ sẽ bị
+              <strong>công khai</strong> cho tất cả thí sinh trong mục "Global
+              Events".
+            </li>
+          </ul>
+
+          <li>
+            <strong
+              >Eclipse Event (Sự kiện Nguyệt Thực - 10:00 PM đến 7:00 AM giờ
+              thực):</strong
+            >
+          </li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              Vào ban đêm, một sự kiện tàn khốc gọi là "Nguyệt Thực" sẽ diễn ra.
+              Khi Nguyệt Thực hoạt động, lũ quái thú trở nên hung hãn hơn.
+            </li>
+            <li>
+              <strong>Hai ô rừng còn lại</strong> (vốn không được chọn làm Lãnh
+              thổ Quái thú ban đầu) cũng sẽ
+              <strong>trở thành vùng nguy hiểm</strong>. Trong thời gian này, cả
+              4 ô rừng (<code>'c6'</code>, <code>'h4'</code>, <code>'e8'</code>,
+              <code>'i8'</code>) đều sẽ kích hoạt phục kích (mất nước và lộ vị
+              trí) nếu Seeker đi qua.
+            </li>
+          </ul>
+        </ul>
+      </li>
+
+      <li>
+        <strong>Violence (Tính năng):</strong>
+        Khi được Host kích hoạt, hòn đảo trở thành chiến trường. Giao tranh tự
+        động nổ ra bất cứ khi nào
+        <strong>2 hoặc nhiều Seeker từ hai phe đối lập</strong> cùng đứng trong
+        một <strong>Main Square</strong>.
+
+        <ul class="nested-list">
+          <li>
+            <strong>Hệ thống Linh Thú (Spirit Class):</strong>
+            Khi bắt đầu kỳ thi, mỗi Seeker được Host chỉ định một trong bốn Linh
+            Thú hộ mệnh. Điều này quyết định phong cách chiến đấu của họ theo
+            vòng tròn khắc chế:
+            <ul
+              style="list-style-type: none; padding-left: 10px; margin-top: 5px"
+            >
+              <li>🟢 <strong>Thanh Long</strong> (khắc chế Bạch Hổ)</li>
+              <li>⚪ <strong>Bạch Hổ</strong> (khắc chế Chu Tước)</li>
+              <li>🔴 <strong>Chu Tước</strong> (khắc chế Huyền Vũ)</li>
+              <li>⚫ <strong>Huyền Vũ</strong> (khắc chế Thanh Long)</li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Thứ tự Giải quyết Giao tranh:</strong>
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Quy tắc Số đông (Majority Rule):</strong> Nếu một team
+                có nhiều Seeker trong ô đó hơn team kia (ví dụ: 2 đấu 1),
+                <strong>phe ít người hơn sẽ thua ngay lập tức</strong>, bất kể
+                Linh Thú là gì.
+              </li>
+              <li>
+                <strong>Khắc chế Linh thú (Đấu tay đôi 1v1):</strong> Nếu số
+                lượng bằng nhau, Linh Thú sẽ được so sánh theo vòng tròn khắc
+                chế trên. Phe khắc chế sẽ thắng.
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Hình phạt cho kẻ Bại trận:</strong>
+            Kẻ thua cuộc phải chịu hậu quả nặng nề:
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                Thanh nước của họ ngay lập tức bị
+                <strong>giảm xuống còn 1.0</strong>.
+              </li>
+              <li>
+                Họ bị dính trạng thái <strong>"Stunned" (Choáng)</strong> trong
+                vòng <strong>6 giờ</strong>. Khi bị choáng, họ không thể thực
+                hiện BẤT KỲ hành động chủ động nào (Move, Search, Gather...).
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Phần thưởng cho kẻ Chiến thắng:</strong>
+            Seeker chiến thắng (hoặc một thành viên ngẫu nhiên của phe thắng)
+            ngay lập tức nhận được
+            <strong>"Thượng Quan Tử Uyển Thảo"</strong> như một chiến lợi phẩm.
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <strong>Tracker (Tính năng):</strong>
+        <ul class="nested-list">
+          <li>
+            Kích hoạt: Khả năng này mở ra cho một Seeker đã ở trạng thái
+            Inactive (bất động) quá 12 giờ liên tục.
+          </li>
+          <li>Khi Seeker sử dụng nó:</li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              Thành công: Nếu Seeker đang đứng trong vùng Super Square mà Hider
+              địch làm trung tâm, một thông báo công khai sẽ được tạo ra. Khả
+              năng này sau đó bị khóa vĩnh viễn với Seeker đó.
+            </li>
+            <li>
+              Thất bại: Nếu Seeker không ở trong vùng Super Square của Hider, họ
+              không cảm nhận được gì. Khả năng không bị khóa vĩnh viễn, nhưng
+              đồng hồ chờ 12 giờ sẽ bị reset lại từ đầu.
+            </li>
+          </ul>
+        </ul>
+      </li>
+
+      <li>
+        <strong>Herbs (Lợi thế):</strong>
+        Các loại thảo dược kỳ lạ xuất hiện. Seeker có thể dùng hành động
+        <strong>Gather</strong> để tìm xem ô nhỏ mình đứng có thảo dược hay
+        không. Mỗi Seeker có 2 lượt Gather mỗi ngày. Có 17 cây thảo dược với vị
+        trí không cố định sẽ
+        <strong>mọc lại hàng ngày tại các tọa độ ngẫu nhiên</strong> được chọn
+        từ một danh sách gồm 30 vị trí tiềm năng và 2 cây thảo dược có vị trí cố
+        định.
+
+        <ul class="nested-list">
+          <li>
+            <strong style="font-weight: 700"
+              >"Tương tư đoạn trường thảo" (Ngẫu nhiên, Số lượng: 2):</strong
+            >
+            Khi hái được, bạn nhận được khả năng <strong>dùng 1 lần</strong> để
+            <strong>Transfer Water (Chuyển nước) từ xa</strong> cho bất kỳ đồng
+            đội nào, bất kể vị trí. Dùng xong sẽ mất.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Thượng quan tử uyển thảo" (Ngẫu nhiên, Số lượng: 2):</strong
+            >
+            Khi hái được, bạn nhận được khả năng <strong>dùng 1 lần</strong> để
+            <strong>Teleport (Dịch chuyển tức thời)</strong> đến bất kỳ ô hợp lệ
+            nào (không phải nước biển). Hành động này không tốn nước và tiêu thụ
+            thảo dược.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Hải tâm thanh tịnh thảo" (Cố định, Số lượng: 1):</strong
+            >
+            Mọc cố định tại <code>2a2</code>. Khi sở hữu, một nút hành động mới
+            ("Purify Water") sẽ hiện ra, nhưng chỉ khi bạn đang đứng tại một
+            Main Square ven biển (tiếp giáp hoặc chứa nước biển). Sử dụng nó sẽ
+            tiêu thụ thảo dược và hồi đầy thanh nước lên 10.0 ngay lập tức.
+          </li>
+          <li>
+            <strong
+              >"Phần Thiên Truy Long Thảo" (Ngẫu nhiên, Số lượng: 2):</strong
+            >
+            Khi hái được, bạn nhận được hành động
+            <strong>"Disclose Trace"</strong>. Khi kích hoạt lên một mục tiêu,
+            <strong>toàn bộ lịch sử di chuyển trong ngày hôm nay</strong> của kẻ
+            đó (từ 00:00 đến hiện tại) sẽ bị
+            <strong>công bố công khai</strong> lên Global Event Log. Mọi người
+            sẽ biết chính xác kẻ đó đã đi đâu vào giờ nào.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Quỳnh tâm hoán mệnh thảo" (Ngẫu nhiên, Số lượng: 1):</strong
+            >
+            (Tự động tiêu thụ - Bị động) Ngay khoảnh khắc thanh nước của bạn
+            chạm 0 (do khát, di chuyển, hay bị quái thú cắn), thảo dược này sẽ
+            cứu bạn khỏi bị loại và hồi phục ngay lập tức
+            <strong>2.0 thanh nước</strong>.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Ly sầu tán phách thảo" (Ngẫu nhiên, Số lượng: 4):</strong
+            >
+            (Tự động tiêu thụ - Bị động) Khi hái được, hai ô
+            <strong>Lãnh thổ Quái thú</strong> ngẫu nhiên (ví dụ 'h4', 'e8') sẽ
+            <strong>hiện hình vĩnh viễn</strong> trên bản đồ cá nhân của bạn.
+            Giúp bạn tránh né hoặc lên kế hoạch di chuyển an toàn.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Nhật nguyệt tinh luân thảo" (Ngẫu nhiên, Số lượng: 2):</strong
+            >
+            (Tự động tiêu thụ - Bị động) Khi hái được, tất cả thí sinh sẽ nhận
+            được <strong>thông báo công khai</strong>.
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Hiệu ứng:</strong> Khi thảo dược này còn tác dụng, bất
+                kỳ ai trong team bạn sở hữu nó sẽ
+                <strong>miễn nhiễm với lệnh 'Detect'</strong>. Bạn sẽ tàng hình
+                trên bản đồ của Seeker địch.
+              </li>
+              <li>
+                <strong>Điểm yếu (Tracker):</strong> Hiệu ứng miễn nhiễm sẽ bị
+                <strong>hóa giải ngay lập tức</strong> khỏi
+                <strong>tất cả</strong> đồng đội ngay khi có bất kỳ Seeker địch
+                nào <strong>dùng thành công Tracker</strong> lên Hider của team
+                bạn. Sự kiện này cũng được thông báo công khai.
+              </li>
+              <li>
+                <strong>Ngoại lệ:</strong> Nếu thảo dược được hái sau khi Hider
+                team mình đã bị Track thành công bởi tất cả Seeker địch còn sống
+                trước đó, nó sẽ không có tác dụng.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong
+              >"Trầm tương vọng nguyệt thảo" (Cố định, Số lượng: 1):</strong
+            >
+            Mọc cố định tại ô nhỏ <strong><code>3g7</code></strong
+            >.
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Khung giờ:</strong> Hiệu ứng bẫy của cây này chỉ hoạt
+                động trong khoảng
+                <strong>8:00 PM (20:00) đến 10:00 PM (21:59) giờ thực</strong>.
+              </li>
+              <li>
+                <strong>Cái Bẫy (Hình phạt):</strong> Trong suốt 2 giờ này, khu
+                vực <code>3g7</code> trở nên độc hại. Bất kỳ Seeker nào
+                <strong>Inactive</strong> tại đây quá
+                <strong>15 phút</strong> sẽ bị tăng gấp 3 lần tốc độ khát nước.
+              </li>
+              <li>
+                <strong>Phần thưởng (Gather):</strong> Thảo dược sẽ
+                <strong>xuất hiện tại một thời điểm ngẫu nhiên</strong> trong
+                khung giờ 8h-10h tối (thời điểm này cố định cho cả phòng trong
+                ngày đó).
+                <ul style="list-style-type: circle">
+                  <li>
+                    Nếu Seeker dùng lệnh
+                    <strong><code>Gather</code></strong> tại <code>3g7</code>
+                    <em>sau khi</em> cây đã mọc (và trước 10h tối), họ sẽ hái
+                    được và nhận ngay lập tức <strong>+1 Lượt Detect</strong>.
+                  </li>
+                  <li>
+                    Nếu họ <code>Gather</code> <em>trước khi</em> cây mọc, họ sẽ
+                    không thấy gì (và vẫn mất lượt Gather).
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>"U tâm tịch diệt thảo" (Ngẫu nhiên, Số lượng: 4):</strong>
+            Khi hái được, bạn nhận được hành động
+            <strong>"Set Trap" (Đặt bẫy)</strong>.
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Đặt bẫy:</strong> Bạn tiêu thụ thảo dược để đặt một cái
+                bẫy tàng hình tại bất kỳ tọa độ hợp lệ nào (trừ các ô
+                <em>Nước ngọt</em>).
+              </li>
+              <li>
+                <strong>Thời gian:</strong> Một khi đã đặt, bẫy tồn tại trong
+                <strong>48 giờ</strong> (thực tế) hoặc cho đến khi bị ai đó dẫm
+                phải.
+              </li>
+              <li>
+                <strong>Kích hoạt:</strong> Nếu một
+                <strong>Seeker địch</strong> đi vào ô có bẫy:
+                <ul style="list-style-type: circle">
+                  <li>
+                    Bẫy kích hoạt ngay lập tức, khiến nạn nhân mất
+                    <strong>3.0 thanh nước</strong>.
+                  </li>
+                  <li>
+                    Một <strong>thông báo công khai</strong> sẽ được gửi đến
+                    toàn bộ thí sinh, công bố việc nạn nhân đã dính bẫy của bạn.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <div class="text-center" style="margin-top: 45px">
+          <img
+            src="{{ url_for('static', filename='images/map_potential.png') }}"
+            alt="Potential Spots"
+            style="width: 75%; height: auto; border-radius: 10px"
+          />
+          <p>30 Vị trí Tiềm năng (Potential Spots)</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <h1 class="text-center" style="margin-bottom: 100px">-----HẾT-----</h1>
+</div>
+{% endblock %}

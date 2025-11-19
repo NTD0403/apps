@@ -1,0 +1,271 @@
+{% extends "base.html" %} {% block title %}Mathematic Bases{% endblock %} {%
+block content %}
+<style>
+  .title-frame {
+    display: inline-block;
+    border: 2px solid #888;
+    padding: 10px 25px;
+    border-radius: 8px;
+    background-color: #ffe100;
+    color: #ee3636;
+  }
+  body {
+    background-color: #cafff4;
+  }
+
+  .image-container-flex {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .image-container-flex > div {
+    flex-basis: 400px;
+    text-align: center;
+  }
+  .image-container-flex img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+</style>
+<div class="main-content">
+  <div class="text-center">
+    <h1 class="title-frame">
+      Chào mừng đến với "Linearity (Vietnamese Version)"
+    </h1>
+  </div>
+  <ul class="rules-list">
+    <li>
+      Trong các ngành kỹ thuật, có một phạm trù xuyên suốt từ kiến thức đại
+      cương đến chuyên ngành, đóng một vai trò đặc biệt quan trọng mà có thể nói
+      nếu thiếu nó thì rất khó để làm được gì một cách có tính hệ thống, đó là
+      “tuyến tính” (linear). Có thể nói nếu không có tính chất tuyến tính, phần
+      lớn các kỹ sư của chúng ta hiện nay chỉ có thể ngồi mò mẫm chỉnh định
+      (thử-rồi-sai trial-and-error) đến bao giờ được thì thôi chứ khó mà thiết
+      kế được cái gì theo quy trình. Ngay cả khi đi vào địa hạt của tính phi
+      tuyến (tức là không tuyến tính), thì ta cũng cần hiểu tuyến tính là gì thì
+      mới hiểu được thế nào là phi tuyến.
+    </li>
+    <li>
+      Sinh viên được tiếp cận với khái niệm tuyến tính ngay từ những ngày đầu
+      bước chân lên giảng đường với môn đại số tuyến tính (linear algebra) - một
+      trong những môn học đại cương quan trọng bậc nhất và hữu dụng bậc nhất.
+      Nhưng, như thường lệ, phần lớn các bạn học chỉ để thi chứ không hiểu đại
+      số tuyến tính dùng để làm gì. Điều này không hẳn do lỗi của sinh viên.
+      Ngày trước tôi đi học thầy cũng chỉ dạy Toán chứ không dạy Toán-để-làm-gì
+      và Toán-có-ý-nghĩa-gì. Trong giờ giải lao, tôi lên bàn giáo viên hỏi thầy
+      “thế tóm lại tuyến tính là gì?”; thầy trả lời “tuyến tính là đường thẳng”.
+      Tất nhiên là thầy trả lời đúng, và có thể coi là đủ, câu trả lời rất chính
+      xác, rất hàm súc, rất Toán, và rất … vô ích.
+    </li>
+    <li>
+      Vậy ta bắt đầu từ chuyện tại sao lại cần tuyến tính. Các kỹ sư nói chung
+      đều cần làm việc với những thứ được quy thành “hệ thống” (system). Một hệ
+      thống có đầu vào (input) và đầu ra (output): Input $\rightarrow$ [System]
+      $\rightarrow$ Output
+    </li>
+    <li>
+      Người kỹ sư cần trả lời một số câu hỏi cơ bản khi phân tích và thiết kế hệ
+      thống:
+      <ul class="nested-list">
+        <li>Nếu đầu vào như thế này thì đầu ra sẽ như thế nào?</li>
+        <li>
+          Nếu đầu vào tăng/giảm ngần này thì đầu ra sẽ tăng/giảm ngần nào?
+        </li>
+        <li>Nếu muốn đầu ra như thế này thì đầu vào cần phải như thế nào?</li>
+      </ul>
+    </li>
+    <li>
+      Mà đời thì phức tạp lắm, các loại tín hiệu vào-ra nó oằn tà là vằn đủ
+      kiểu. Cứ cho là biết rõ mô hình của hệ thống đi, mỗi lần cần làm gì lại
+      ngồi tính từng ca một thì đến Tết. Hơn nữa, tính được 1000 trường hợp,
+      ngày mai rơi vào trường hợp thứ 1001 không biết sẽ như thế nào. Do vậy,
+      người kỹ sư cần một phương pháp để chỉ cần xét một số ít trường hợp cơ bản
+      mà vẫn biết được tổng quát hệ thống sẽ hoạt động như thế nào trong mọi
+      (hoặc phần lớn) các trường hợp.
+    </li>
+
+    <li>
+      Nếu ánh xạ là tuyến tính, nó cần có 2 tính chất:
+      <ul class="nested-list">
+        {% raw %}
+        <li>
+          Tính nhân: nếu tăng/giảm đầu vào $a$ lần (với $a$ là một hằng số) thì
+          đầu ra cũng tăng/giảm tương ứng $a$ lần. Như vậy, ta chỉ cần xét hệ
+          thống với đầu vào có độ lớn tiêu chuẩn là được. Với các độ lớn khác,
+          chỉ cần nhân/chia theo tỷ lệ.
+        </li>
+        <li>
+          Tính cộng: nếu hệ thống có:
+          <ul class="nested-list">
+            <li>đầu vào $x1$ cho đầu ra $y1 = f(x1)$</li>
+            <li>đầu vào $x2$ cho đầu ra $y2 = f(x2)$</li>
+          </ul>
+          <p>
+            thì với đầu vào là tổng $x = x1 + x2$ sẽ cho đầu ra là tổng 2 đầu ra
+            trên $y = y1 + y2$.
+          </p>
+        </li>
+      </ul>
+    </li>
+
+    <li>
+      Như vậy, ta chỉ cần xét một vài trường hợp tín hiệu đầu vào có dạng cơ bản
+      (một chiều, điều hoà, bước nhảy, xung đơn vị, v.v.) và tính các đầu ra cơ
+      bản là đáp ứng của các đầu vào cơ bản đó. Sau đó, với mỗi dạng tín hiệu
+      bất kỳ ta có thể phân tích thành tổng của những tín hiệu cơ bản (điều này
+      làm được) và do đó đầu ra sẽ là tổng của những đáp ứng cơ bản.
+    </li>
+
+    <li>
+      Kết hợp tính cộng và tính nhân ta được tính chất (nguyên lý) xếp chồng
+      (superposition). Hệ tuyến tính là hệ thoả mãn nguyên lý xếp chồng: $x =
+      ax1 + bx2$ $\rightarrow$ [Linear System $y = f(x)$] $\rightarrow$ $y = ay1
+      + by2$. {% endraw %}
+      <div class="text-center" style="flex-basis: 300px; margin-top: 15px">
+        <img
+          src="{{ url_for('static', filename='images/superposition.jpg') }}"
+          alt="Superposition"
+          style="width: 50%; height: auto; border-radius: 10px"
+        />
+        <p>Superposition</p>
+      </div>
+    </li>
+    {% raw %}
+    <li>
+      Như vậy, nếu một hệ thống là tuyến tính, ta chỉ cần khảo sát một số đáp
+      ứng cơ bản của nó là sẽ biết được đáp ứng của hệ trong bất cứ trường hợp
+      nào khác. Với một mạch điện, ta chỉ cần xét đáp ứng của mạch với sóng điều
+      hoà (hàm sin) vì nhờ ơn ông $Fourier$ ta biết rằng mọi dạng tín hiệu đều
+      có thể coi là tổng của một chuỗi các hàm điều hoà (với các hệ số lớn nhỏ
+      khác nhau). Đây là cơ sở cho việc phân tích hệ thống trên “miền tần số”.
+      $$x(t) = \sum_{n=-\infty}^{\infty} c_n e^{j n \omega_0 t}\quad with \quad
+      c_n = \frac{1}{T_0} \int_{T_0} x(t)e^{-j n \omega_0 t} \, dt\quad and
+      \quad \omega_0 = \frac{2\pi}{T_0}$$ $$or\quad x(t) = a_0 +
+      \sum_{n=1}^{\infty} \left[ a_n \cos(n \omega_0 t) + b_n \sin(n \omega_0 t)
+      \right] \quad with \quad a_0 = \frac{1}{T_0} \int_{T_0} x(t)dt \quad and
+      \quad a_n = \frac{2}{T_0} \int_{T_0} x(t) \cos(n \omega_0 t)dt \quad and
+      \quad b_n = \frac{2}{T_0} \int_{T_0} x(t) \sin(n \omega_0 t)dt $$
+    </li>
+    {% endraw %} {% raw %}
+    <li>
+      Với một hệ điều khiển theo thời gian, ta chỉ cần xét đáp ứng của hệ với
+      các đầu vào dạng bước nhảy đơn vị (unit step): $1(t)$, hoặc xung đơn vị
+      (Dirac delta): $\delta (t)$, vì mọi dạng tín hiệu khác đều có thể tạo ra
+      bằng cách lấy tổng (tích phân theo thời gian) của các bước nhảy hoặc xung
+      này (với các hệ số lớn nhỏ khác nhau). Đây là cơ sở cho việc phân tích hệ
+      thống trên “miền thời gian”: {% endraw %}
+      <div class="image-container-flex">
+        <div>
+          <img
+            src="{{ url_for('static', filename='images/fourier_series-011.png') }}"
+            alt="Time_domain_and_Frequency_domain"
+          />
+          <p>Time domain - Frequency domain</p>
+        </div>
+
+        <div>
+          <img
+            src="{{ url_for('static', filename='images/maxresdefault.jpg') }}"
+            alt="Fomula"
+          />
+          <p>Fomula</p>
+        </div>
+      </div>
+    </li>
+    <li>
+      Tóm lại, với hệ tuyến tính, chỉ cần tính 1-2 trường hợp cơ bản, các trường
+      hợp khác đều là xếp chồng của các trường hợp cơ bản ấy. Tính chất tuyến
+      tính đáng yêu như vậy nên ai cũng yêu nó. Ngay cả khi gặp các hệ phi tuyến
+      (mô hình toán, tức là hàm số mô tả hành vi của hệ, không thoả mãn nguyên
+      lý xếp chồng) thì người ta cũng cố gắng “tuyến tính hoá” để giải quyết.
+      Khi nào không tuyến tính hoá được nữa, khi đó người kỹ sư gặp ác mộng. Đối
+      với các hệ phi tuyến, ta không có cách giải quyết tổng quát như hệ tuyến
+      tính. Đối mặt với các hệ phi tuyến, ta chỉ có thể giải quyết từng ca một
+      trong những dạng cụ thể, và thường chỉ có lời giải xấp xỉ gần đúng. Đó là
+      tại sao phải đợi đến Elon Musk mới có thể thu hồi được tên lửa đã qua sử
+      dụng và tại sao ta không hoàn toàn tin được dự báo thời tiết của ngày mai.
+    </li>
+    {% raw %}
+    <li>
+      Nói thêm một chút tại sao lại là đại số tuyến tính. Các hàm số mô hình hệ
+      thống có thể có nhiều dạng khác nhau, và với thế giới vật lý kỹ thuật (tôi
+      không biết gì về thuyết tương đối và cơ học lượng tử nên không nói đến ở
+      đây), các mô hình đều là các hệ phương trình vi phân. Ta cũng có phương
+      trình vi phân tuyến tính và phi tuyến. Nhưng ngay cả việc giải trực tiếp
+      các hệ phương trình vi phân tuyến tính bằng công cụ giải tích cũng rất
+      mệt. (Chả thế mà công chúng vẫn hay lấy “đạo hàm, tích phân” làm hoán dụ
+      cho Toán và đại diện cho sự khó nhằn của môn học này.) Cho nên người ta
+      lại tìm cách đổi biến (một chiêu ánh xạ nữa) để biến phương trình vi phân
+      tuyến tính thành phương trình đại số tuyến tính và dùng các công cụ đại số
+      tuyến tính để xử lý hệ thống. Chính là phép biến đổi $Laplace$. $$
+      \mathcal{L}\{f(t)\} = F(s) = \int_{0}^{\infty} f(t)\, e^{-st}dt \quad and
+      \quad \mathcal{L}^{-1}\{F(s)\} = f(t) = \frac{1}{2\pi j} \int_{\sigma -
+      j\infty}^{\sigma + j\infty} F(s)\, e^{st}ds $$
+    </li>
+    {% endraw %}{% raw %}
+    <li>
+      Đại số tuyến tính còn rất thuận tiện ở chỗ thay vì viết các hàm số dài
+      dòng, nó gom hết các đầu vào thành một cột (vector), đầu ra thành một cột
+      khác, còn hệ thống được biểu diễn thành một bảng (ma trận). Tính toán với
+      vector và ma trận gọn gàng và thuận tiện hơn nhiều so với hệ phương trình
+      gốc (dù đã là tuyến tính). Trong các lĩnh vực kỹ thuật mà tôi biết hoặc
+      láng máng nghe qua, chưa thấy lĩnh vực nào không cần đến đại số tuyến
+      tính, không thao tác với các ma trận và vector. $$ \vec{v} =
+      \begin{bmatrix} F_1 \\ x_1 \\ m_1 \end{bmatrix} \quad and \quad A =
+      \begin{bmatrix} u_{11} & i_{11} & z_{11} \\ p_{22} & q_{22} & \eta_{22} \\
+      \xi_{33} & \phi_{33} & \omega_{33} \end{bmatrix} $$
+    </li>
+    {% endraw %}
+    <li>
+      Nói dai (và do đó rất có thể là nói dại) thêm một tí về thứ đang là mốt
+      hiện nay: trí tuệ nhân tạo (AI). Cách tiếp cận hệ thống như trên với các
+      mô hình toán học rõ ràng (dù tuyến tính hay phi tuyến) gọi là model-based
+      approach. Biết bao thế hệ tìm cách giải quyết các bài toán kỹ thuật một
+      cách có tính hệ thống, không dựa trên mò mẫm thử-rồi-sai (mai thử tiếp). M
+      Nhưng ngày nay, cách làm mò mẫm không cần biết mô hình hệ thống (coi hệ là
+      hộp đen - blackbox) đang ngày một thịnh hành – chính là học máy (machine
+      learning). Khác ở chỗ thay vì người mò (đến Tết cũng không xong) thì ta để
+      máy tính nó mò (vài phút/giờ/ngày). (Tất nhiên là máy mò cũng có phương
+      pháp của nó, chính gọi là các thuật toán huấn luyện, các mô hình học máy.)
+      Người mò hết hơi được hàng trăm hàng nghìn trường hợp vẫn không đủ, máy mò
+      hàng triệu hàng tỷ trường hợp (dữ liệu lớn) thì “hầu như” là đủ. Nhưng
+      “hầu như” chắc chắn thì vẫn chưa chắc chắn. Cho đến nay, bọn AI nó chạy
+      đúng đến đâu thì ta biết đến đấy, không ai dám chắc ngày mai nó còn chạy
+      đúng nữa hay không. Do vậy, trong nhiều lĩnh vực kỹ thuật đòi hỏi sự chính
+      xác, tính ổn định, độ tin cậy cao, ứng dụng của AI vẫn còn rất hạn chế. AI
+      thực ra mới chỉ phổ biến ở những ứng dụng có nhiều tương tác với con người
+      (một giống loài thật ra khá dễ tính, “hơi hơi đúng” là được rồi). Dù không
+      phải chuyên gia về AI, dựa vào những kiến giải trên, tôi cũng mạnh dạn
+      nhận định rằng AI sắp đến lúc bão hoà rồi, khó mà có tiến bộ đột phá trong
+      tương lai gần. Đó là bởi bản chất những thành tựu đáng kinh ngạc của AI
+      trong thời gian qua nằm ở sức mạnh của máy tính (mò nhanh, mò liên tục
+      không cần nghỉ) và lượng dữ liệu lớn (mò được nhiều trường hợp); chứ cốt
+      lõi của AI không khác gì mấy chục năm trước (vẫn là cấu trúc mạng neural
+      và những thuật toán để huấn luyện nó, bản chất cũng không nằm ngoài đại số
+      để xử lý ma trận, giải tích để tính đạo hàm nếu cần, và xác suất thống kê
+      để đánh giá độ chính xác).
+      <div class="image-container-flex">
+        <div>
+          <img
+            src="{{ url_for('static', filename='images/AI1.jpg') }}"
+            alt="AI1"
+          />
+        </div>
+
+        <div>
+          <img
+            src="{{ url_for('static', filename='images/AI2.jpg') }}"
+            alt="AI2"
+          />
+        </div>
+      </div>
+    </li>
+  </ul>
+  <h1 class="text-center" style="margin-bottom: 100px; margin-top: 100px">
+    -----THE END-----
+  </h1>
+</div>
+{% endblock %}

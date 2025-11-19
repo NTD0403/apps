@@ -1,0 +1,555 @@
+{% extends "base.html" %} {% block title %}Rules of the third exam{% endblock %}
+{% block content %}
+<style>
+  .rules-container {
+    padding-left: 40px;
+    padding-right: 40px;
+    line-height: 1.6;
+  }
+
+  .rules-section {
+    margin-bottom: 2rem;
+  }
+
+  .rules-section h2 {
+    margin-bottom: 15px;
+  }
+
+  .rules-section ul {
+    padding-left: 40px;
+  }
+
+  .rules-section ul.nested-list {
+    padding-left: 50px;
+    list-style-type: " + ";
+  }
+
+  .title-frame {
+    display: inline-block;
+    border: 2px solid #888;
+    padding: 10px 25px;
+    border-radius: 8px;
+    background-color: #ffe100;
+    color: #ee3636;
+  }
+
+  body {
+    background-color: #fcffd5;
+  }
+</style>
+
+<div class="rules-container">
+  <div class="text-center">
+    <h1 class="title-frame">SPECIAL EXAM 3 (HIDE AND SEEK FRIENDSHIP)</h1>
+  </div>
+
+  <div class="rules-section">
+    <h2>💥Content:</h2>
+
+    <ul class="rules-list">
+      <li>
+        6 contestants are divided into 2 groups to play hide and seek on an
+        island, each group selects 1 person to hide and the rest will search for
+        the hider of the opposing team.
+      </li>
+
+      <li>
+        When the exam starts, the hider of each side chooses a partial square to
+        hide in and will not be allowed to move during the exam, then the
+        seekers choose a partial square they want to start.
+      </li>
+
+      <li>
+        The seekers are allowed to move or stand still at any time. In addition,
+        the seeker can search a partial square to see if there is a hider from
+        the opposing team there. Each seeker will have only 1 turn to search
+        during the exam.
+      </li>
+
+      <li>
+        The hider has the option to surrender. When chosen, that group will lose
+        and the seekers will lose 10pt each while the hider will lose nothing.
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>🦄Mechanism:</h2>
+
+    <ul class="rules-list">
+      <li>
+        The contestants on the island will continuously lose water over time,
+        and when the water bar drops to 0, that contestant will be eliminated.
+        (If the hider is eliminated due to running out of water, that person
+        will be penalized 10pt and the person with the most water from that
+        group must hide in the partial square they are standing on or the
+        nearest suitable partial square. If no one is left, that group loses).
+      </li>
+
+      <li>
+        The seekers who pass through the partial square with water and take the
+        water will have their water bar filled fully (1 turn to take water per
+        day), and the contestants can transfer water to each other.
+      </li>
+
+      <li>
+        Every day, the seeker has 2 turns to detect the status of the other
+        team's seekers (where they are). Detecting is just able to used from 7am
+        to 10pm in real time (outside of that time, this action would be
+        unavailable).
+      </li>
+      <li>
+        <strong>Hider's Gambit:</strong>
+        The Hider can choose to activate this powerful, high-risk ability once
+        per exam.
+
+        <ul class="nested-list">
+          <li>
+            <strong>Cost (The Gambit):</strong> Upon activation, the Hider's
+            exact <strong>Main Square</strong> coordinate (e.g.,
+            <code>e4</code>) is immediately revealed to
+            <strong>all contestants</strong> in a public notification.
+          </li>
+          <li>
+            <strong>Reward (The Payout):</strong> In exchange for this
+            sacrifice, all living Seekers on the Hider's team will instantly
+            receive <strong>+1 Search Turn</strong> and
+            <strong>+1 Gather Turn</strong>. This ability can only be used if
+            the Hider has not already used it.
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="rules-section">
+    <h2>💡Definitions:</h2>
+
+    <ul class="rules-list">
+      <li>
+        <strong>Coordinate:</strong> There are 3 types of coordinate:
+        <ul class="nested-list">
+          <li>
+            <strong>Main squares:</strong> A square is directly defined by row
+            and column (similar to a chessboard). It is one of the 100 basic
+            tiles that make up the map’s 10×10 grid. The rows are numbered from
+            1 to 10, and the columns are labeled from A to J. A square is read
+            by combining the lowercase column letter with the corresponding row
+            number (for example: ‘e4’, ‘f5’, ‘j10’).
+          </li>
+          <li>
+            <strong>Partial squares:</strong> One of the four quadrants that
+            subdivide a single main square. On the 10x10 map grid, while a main
+            square is identified by its coordinates (e.g., 'e4'), its four
+            partial squares are identified with a numerical prefix (e.g., '1e4',
+            '2e4', '3e4', and '4e4').
+          </li>
+          <li>
+            <strong>Super squares:</strong> A region composed of 9 main squares.
+            It is named after its central main square (using a capital letter),
+            with the other 8 main squares surrounding it. For example, the E4
+            super square consists of the e4 main square as its center,
+            surrounded by d3, d4, d5, e3, e5, f3, f4, and f5. If a super square
+            does not contain the full set of 9 main squares, the part of it that
+            lies within the map is still defined as described above.
+          </li>
+        </ul>
+        <div class="text-center">
+          <img
+            src="{{ url_for('static', filename='images/map_explain.png') }}"
+            alt="Indeed Map"
+            style="width: 75%; height: auto; border-radius: 10px"
+          />
+          <p>Map's Coordinates</p>
+        </div>
+      </li>
+      <li>
+        <strong>Inactive:</strong> The inactive state is defined as not
+        performing any action that sends a request - that is, not pressing any
+        button at the bottom of the page (e.g., Move, Search, Detect).
+      </li>
+    </ul>
+  </div>
+  <div class="rules-section">
+    <h2>🦂Reward and ❄️Penalty:</h2>
+
+    <ul class="rules-list">
+      <li>
+        The winning team receives 60pt divided equally among the surviving
+        contestants, while the losing team loses 5pt each.
+      </li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>🚨Note:</h2>
+
+    <ul class="rules-list">
+      <li>
+        Contestants will start with 10 water bars, water loss rate: 1 bar every
+        6 hours. Water bars are able to be a float number.
+      </li>
+
+      <li>Cannot drink, hide, move to the partial square with seawater.</li>
+    </ul>
+  </div>
+
+  <div class="rules-section">
+    <h2>📑Refer more:</h2>
+
+    <ul class="rules-list">
+      <li>
+        Movement speed: The distance between 2 partial squares is defined as the
+        distance between the centers of the 2 partial squares.
+      </li>
+
+      <li>Time spent to move from 4a10 to 2j1 is 6 hours.</li>
+
+      <li>
+        All the partial(or main) squares with water: 3c3, 4c3, 1c4, 2c4, 3d4,
+        4d4, d5, 1d6, 2d6, 1e6.
+      </li>
+
+      <li>Besides those, there are some special things during the exam.</li>
+    </ul>
+  </div>
+
+  <div class="text-center">
+    <img
+      src="{{ url_for('static', filename='images/map.png') }}"
+      alt="Indeed Map"
+      style="width: 75%; height: auto; border-radius: 10px"
+    />
+
+    <p>Indeed Map</p>
+  </div>
+
+  <div class="rules-section">
+    <h2>🔐Special Things:</h2>
+
+    <ul class="rules-list">
+      <li>
+        <strong>Wild Beast Territories (Disadvantage):</strong>
+        <ul class="nested-list">
+          <li>
+            A region of dense jungle on the island (defined as main squares:
+            <strong>'c6', 'h4', 'e8', 'i8'</strong>) is known to be hazardous.
+            At the start of the exam, 2 of these 4 main squares are secretly and
+            randomly designated as <strong>Beast Territories</strong>.
+          </li>
+          <li>
+            If a Seeker's movement path intersects with one of these two active
+            Beast Territories, it will be ambushed.
+          </li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              The ambushed Seeker is immediately penalized with the loss of an
+              additional <strong>1.0 water bar</strong>.
+            </li>
+            <li>
+              Furthermore, his final destination's coordinate (the partial
+              square where his move ended) is
+              <strong>publicly revealed</strong> to all contestants in the
+              "Global Events" feed.
+            </li>
+          </ul>
+
+          <li>Eclipse Event (10:00 PM - 7:00 AM Real Time):</li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              During the night, a sinister event known as the "Eclipse" occurs.
+              While the Eclipse is active, the beasts become more aggressive and
+              territorial.
+            </li>
+            <li>
+              The <strong>remaining two jungle squares</strong> (that were not
+              originally selected as Beast Territories)
+              <strong>also become active ambushing zones</strong>. During this
+              time, all four jungle squares (<code>'c6'</code>,
+              <code>'h4'</code>, <code>'e8'</code>, <code>'i8'</code>) will
+              trigger an ambush (including water loss and public reveal) if a
+              Seeker's path intersects them.
+            </li>
+          </ul>
+        </ul>
+      </li>
+
+      <li>
+        <strong>Violence (Feature):</strong>
+
+        When enabled by the Host, the island becomes a battlefield. Combat
+        triggers automatically whenever
+        <strong>2 or more Seekers from opposing teams</strong> occupy the same
+        <strong>Main Square</strong>.
+
+        <ul class="nested-list">
+          <li>
+            <strong>The Spirit Class System:</strong>
+            At the start of the exam, every Seeker is assigned one of four
+            Spirit Guardians by Host. This defines their combat style:
+            <ul
+              style="list-style-type: none; padding-left: 10px; margin-top: 5px"
+            >
+              <li>🟢 <strong>Thanh Long</strong> (counters Bạch Hổ)</li>
+              <li>⚪ <strong>Bạch Hổ</strong> (counters Chu Tước)</li>
+              <li>🔴 <strong>Chu Tước</strong> (counters Huyền Vũ)</li>
+              <li>⚫ <strong>Huyền Vũ</strong> (counters Thanh Long)</li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Combat Resolution Priority:</strong>
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Majority Rule (Overwhelming Force):</strong> If one team
+                has more Seekers in the square than the other (e.g., 2 vs 1),
+                the <strong>minority side loses immediately</strong>, regardless
+                of their Spirit Class.
+              </li>
+              <li>
+                <strong>Spirit Counter (1v1 Duel):</strong> If numbers are
+                equal, the Spirit Classes are compared based on the cycle above.
+                The counter side wins.
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Penalty for the Defeated:</strong>
+            The loser suffers a devastating below:
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                Their Water Bar is instantly <strong>reduced to 1.0</strong>.
+              </li>
+              <li>
+                They receive the <strong>"Stunned"</strong> status for
+                <strong>6 hours</strong>. While Stunned, they cannot perform ANY
+                active actions (Move, Search, Gather, etc.), leaving them
+                vulnerable to passive thirst.
+              </li>
+            </ul>
+          </li>
+
+          <li>
+            <strong>Reward for the Victor:</strong>
+            The winning Seeker (or one random member of the winning team)
+            instantly receives <strong>"Thượng Quan Tử Uyển Thảo"</strong> as a
+            spoil of war.
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <strong>Tracker (Feature):</strong>
+        <ul class="nested-list">
+          <li>
+            Activation: This ability becomes available to a Seeker who has been
+            inactive for more than 12 consecutive hours.
+          </li>
+
+          <li>When a seeker use it:</li>
+          <ul class="nested-list" style="list-style-type: square">
+            <li>
+              Success: If the Seeker is inside a super square with the enemy
+              Hider at its center, a public notification is created announcing
+              their presence. This ability is then permanently disabled for that
+              Seeker for the rest of the match.
+            </li>
+            <li>
+              Failure: If the Seeker is not inside the Hider's super Square,
+              they sense nothing. The ability is not permanently disabled, but
+              the 12-hour cooldown timer is still reset.
+            </li>
+          </ul>
+        </ul>
+      </li>
+      <li>
+        <strong>Herbs (Advantage):</strong>
+        Extraordinary herbs with different uses appear, come and explore. The
+        seeker can use the gathering ability to see if the partial square has a
+        herb or not, each seeker has 2 turns to gather per day. 17 unfixed herbs
+        below
+        <strong>respawn daily at random coordinates</strong> selected from a
+        pool of 30 potential spots on the map and 2 fixed herbs.
+        <ul class="nested-list">
+          <li>
+            <strong style="font-weight: 700"
+              >"Tương tư đoạn trường thảo" (Unfixed, Quantity: 2):</strong
+            >
+            Upon gathering it, you receive a
+            <strong>one-time ability</strong> to
+            <strong>transfer water remotely</strong> to any teammate, regardless
+            of your current location. This ability consumes the herb.
+          </li>
+
+          <li>
+            <strong style="font-weight: 700"
+              >"Thượng quan tử uyển thảo" (Unfixed, Quantity: 2):</strong
+            >
+            Upon gathering it, you receive a
+            <strong>one-time ability</strong> to
+            <strong>teleport</strong> instantly to any valid (non-seawater)
+            partial square on the island. This action costs no water and
+            consumes the herb.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Hải tâm thanh tịnh thảo" (Fixed, Quantity: 1):</strong
+            >
+            When you possess this herb, a new action button ("Purify Water")
+            will appear only when you are standing in a main square that is
+            "coastal" (meaning it is adjacent to or contains at least one
+            seawater partial square).Using this action consumes the herb and
+            instantly refills your water bar to 10.0. You do not need to be
+            standing in the seawater itself, only in the same main square as it.
+          </li>
+          <li>
+            <strong>"Phần Thiên Truy Long Thảo" (Unfixed, Quantity: 2):</strong>
+            Upon gathering it, you gain the
+            <strong>"Disclose Trace"</strong> action. When activated, the
+            target's
+            <strong>entire movement history for the current day</strong>
+            (from 00:00 to the present moment) is immediately
+            <strong>publicly broadcast</strong>
+            to the Global Event Log. All players will see exactly where that
+            enemy has been and at what time.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Quỳnh tâm hoán mệnh thảo" (Unfixed, Quantity: 1):</strong
+            >
+            (Passively consumed) The moment your water bar reaches 0 (due to
+            thirst, movement, or a beast attack). It pulls you back from the
+            brink of elimination and immediately restores your water to
+            <strong>2.0 bars</strong>
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Ly sầu tán phách thảo" (Unfixed, Quantity: 4):</strong
+            >
+            (Passively consumed) Upon gathering it, the two randomly selected
+            <strong>Beast Territories</strong> (e.g., 'h4', 'e8') will be
+            <strong>permanently revealed</strong> on your personal map. This
+            allows you to avoid their deadly ambushes or strategically plan your
+            route.
+          </li>
+          <li>
+            <strong style="font-weight: 700"
+              >"Nhật nguyệt tinh luân thảo" (Unfixed, Quantity: 2):</strong
+            >(Passively consumed) Upon gathering it, all contestants are
+            immediately informed via a <strong>public notification</strong>.
+
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Effect:</strong> While this herb is active, any
+                contestant on your team who possesses it is
+                <strong>immune to the 'Detect' action</strong>. You will not
+                appear on an enemy Seeker's map, even when their 'Detect' is
+                active.
+              </li>
+              <li>
+                <strong>Weakness (Tracker):</strong> The immunity effect will be
+                <strong>immediately dispelled</strong> from
+                <strong>all</strong> teammates as soon as any enemy Seeker
+                <strong>successfully uses the Tracker ability</strong> on your
+                team's Hider. This event is also announced publicly.
+              </li>
+              <li>
+                <strong>Edge Case:</strong> If this herb is gathered after all
+                living enemy Seekers have already successfully used their
+                Tracker ability, the herb will provide no effect.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>"Trầm tương vọng nguyệt thảo" (Fixed, Quantity: 1):</strong>
+
+            It is located at partial square
+            <strong><code>3g7</code></strong
+            >.
+
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Time Window:</strong> The following herb's trap effects are
+                active only between
+                <strong>8:00 PM (20:00) and 10:00 PM (21:59) real-time</strong>.
+              </li>
+              <li>
+                <strong>The Trap (Penalty):</strong> During this entire 2-hour
+                window, the area <code>3g7</code> becomes hazardous. Any Seeker
+                who remains <strong>Inactive</strong> at this location for
+                <strong>more than 15 minutes</strong> will suffer a tripled (3x)
+                passive water loss rate.
+              </li>
+              <li>
+                <strong>The Reward (Gather):</strong> The herb itself will
+                <strong>spawn at a random moment</strong> within the 8:00 PM to
+                10:00 PM window (this time is fixed per room, per day).
+                <ul style="list-style-type: circle">
+                  <li>
+                    If a Seeker uses the
+                    <strong><code>Gather</code></strong> action at
+                    <code>3g7</code> <em>after</em> it has spawned (and before
+                    10:00 PM), they will successfully harvest it and instantly
+                    receive <strong>+1 Detect Turn</strong> (like any normal
+                    Detect Turn - no limitation).
+                  </li>
+                  <li>
+                    If they <code>Gather</code> <em>before</em> the random spawn
+                    time, they will find nothing (and still waste their Gather
+                    Turn).
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>"U tâm tịch diệt thảo" (Unfixed, Quantity: 4):</strong>
+
+            Upon gathering it, you gain the
+            <strong>"Set Trap"</strong> action.
+
+            <ul class="nested-list" style="list-style-type: square">
+              <li>
+                <strong>Setting the Trap:</strong> You can consume this herb to
+                plant an invisible trap at any valid coordinate on the map
+                (except for <em>Fresh Water</em> locations).
+              </li>
+              <li>
+                <strong>Duration:</strong> Once set, the trap remains active for
+                <strong>48 hours</strong> (real-time) or until it is triggered
+                by an enemy.
+              </li>
+              <li>
+                <strong>The Trigger:</strong> If an
+                <strong>enemy Seeker</strong> moves into the trapped coordinate:
+                <ul style="list-style-type: circle">
+                  <li>
+                    The trap activates instantly, causing the victim to lose
+                    <strong>3.0 Water Bars</strong>.
+                  </li>
+                  <li>
+                    A <strong>public notification</strong> is broadcast to all
+                    contestants, announcing that the victim has fallen into your
+                    trap.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <div class="text-center" style="margin-top: 45px">
+          <img
+            src="{{ url_for('static', filename='images/map_potential.png') }}"
+            alt="Indeed Map"
+            style="width: 75%; height: auto; border-radius: 10px"
+          />
+
+          <p>30 Potential Spots</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <h1 class="text-center" style="margin-bottom: 100px">-----THE END-----</h1>
+</div>
+{% endblock %}

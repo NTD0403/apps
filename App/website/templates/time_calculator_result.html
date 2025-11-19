@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Result{% endblock %} {% block content
+%} {% if output['t_out'] %}
+
+<h2 class="text-center">Result:</h2>
+
+{% if output['t_out'] <= 3600 %}
+<h3 class="text-center">
+  The expected time to arrive from '{{ start_coordinate }}' to '{{
+  end_coordinate }}': {{ (output['t_out']|int)//60 }}m
+</h3>
+{% elif output['t_out'] > 3600 %}
+<h3 class="text-center">
+  The expected time to arrive from '{{ start_coordinate }}' to '{{
+  end_coordinate }}': {{ (output['t_out']|int)//3600 }}h {{
+  ((output['t_out']|int)%3600)//60 }}m
+</h3>
+{% else %}
+<h3 class="text-center">{{ output['t_out'] }}</h3>
+{% endif %} {% endif %}
+<div
+  class="image-container"
+  style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  "
+>
+  <div class="text-center" style="flex-basis: 300px">
+    <img
+      src="{{ url_for('static', filename='images/map.png') }}"
+      alt="Indeed Map"
+      style="width: 100%; height: auto; border-radius: 10px"
+    />
+    <p>Indeed Map</p>
+  </div>
+
+  {% if plot_image %}
+  <div class="text-center" style="flex-basis: 400px">
+    <img
+      src="data:image/png;base64,{{ plot_image }}"
+      alt="Plotified Map"
+      style="
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      "
+    />
+    <p>Plotified Map</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

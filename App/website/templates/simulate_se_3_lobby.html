@@ -1,0 +1,148 @@
+{% extends "base.html" %} {% block title %}Lobby{% endblock %} {% block content
+%}
+<style>
+  .title-frame {
+    display: inline-block;
+    border: 2px solid #888;
+    padding: 10px 25px;
+    border-radius: 8px;
+    background-color: #ffe100;
+    color: #ee3636;
+  }
+  body {
+    background-color: #cafff4;
+  }
+
+  .image-container-flex {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .image-container-flex > div {
+    flex-basis: 400px;
+    text-align: center;
+  }
+  .image-container-flex img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+</style>
+<div class="main-content">
+  <h1 class="text-center" style="margin-top: 50px; margin-bottom: 50px">
+    Lobby
+  </h1>
+  <h3 class="text-center">
+    Select your team and your role before participating in Special Exam 3
+  </h3>
+
+  <form method="POST" style="width: 50%; margin: auto; margin-top: 30px">
+    <div class="mb-3">
+      <label for="team" class="form-label">Select your team:</label>
+      <select class="form-select" id="team" name="team">
+        <option value="TeamA">Team A</option>
+        <option value="TeamB">Team B</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="role" class="form-label">Select your role:</label>
+      <select class="form-select" id="role" name="role">
+        <option value="Hider">Hider</option>
+        <option value="Seeker">Seeker</option>
+        <option value="Random">Random</option>
+      </select>
+    </div>
+<div class="mb-3" id="spirit-group" style="display: none;">
+      <label for="spirit" class="form-label">Select your Spirit Guardian:</label>
+      <select class="form-select" id="spirit" name="spirit">
+        <option value="Dragon">🟢 Thanh Long (Dragon)</option>
+        <option value="Tiger">⚪ Bạch Hổ (Tiger)</option>
+        <option value="Bird">🔴 Chu Tước (Bird)</option>
+        <option value="Tortoise">⚫ Huyền Vũ (Tortoise)</option>
+        <option value="Random">🎲 Random Spirit</option>
+      </select>
+      <div class="form-text text-muted">
+        Counters: Dragon > Tiger > Bird > Tortoise > Dragon.
+      </div>
+    </div>
+    <div class="mb-3" id="location-group">
+      <label for="start_location" id="location-label" class="form-label"
+        >Type your coordinate of your departure:</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="start_location"
+        name="start_location"
+        placeholder="For examples: 2e2, 3g6, ..."
+      />
+    </div>
+
+    <button type="submit" class="btn btn-success mt-4">START GAME</button>
+  </form>
+
+  <p class="text-center" style="margin-top: 40px">
+    <strong>
+      NOTE: PLEASE MAKE SURE THAT YOU HAVE READ THE RULE OF THIS EXAM
+      METICULOUSLY.
+    </strong>
+  </p>
+  <div class="image-container-flex" style="margin-bottom: 50px">
+    <div>
+      <img
+        src="{{ url_for('static', filename='images/map.png') }}"
+        alt="Indeed Map"
+      />
+      <p>Indeed Map</p>
+    </div>
+
+    <div>
+      <img
+        src="{{ url_for('static', filename='images/plot_map.png') }}"
+        alt="Plotified Map"
+      />
+      <p>Plotified Map</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var roleDropdown = document.getElementById("role");
+    var locationGroup = document.getElementById("location-group");
+    var locationLabel = document.getElementById("location-label");
+    var locationInput = document.getElementById("start_location");
+    var spiritGroup = document.getElementById("spirit-group");
+
+    function updateLocationVisibility() {
+      if (!roleDropdown || !locationGroup) return;
+
+      var role = roleDropdown.value;
+
+      if (role === "Hider") {
+        locationGroup.style.display = "block";
+        spiritGroup.style.display = "none";
+        locationInput.required = true;
+        locationLabel.textContent = "Type your hiding coordinate:";
+      } else if (role === "Seeker") {
+        locationGroup.style.display = "block";
+        spiritGroup.style.display = "block";
+        locationInput.required = true;
+        locationLabel.textContent = "Type the coordinate of your departure:";
+      } else if (role === "Random") {
+        locationGroup.style.display = "none";
+        spiritGroup.style.display = "none";
+        locationInput.required = false;
+      }
+    }
+
+    roleDropdown.addEventListener("change", updateLocationVisibility);
+    updateLocationVisibility();
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %} {% block title %}Game Rooms{% endblock %} {% block
+content %}
+<style>
+  .room-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+  }
+  .room-card:hover {
+    background: #f8f9fa;
+  }
+  .room-name {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  .room-host {
+    color: #6c757d;
+  }
+</style>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4">
+      <h3>Create a New Room</h3>
+      <form method="POST" action="{{ url_for('views.game_rooms') }}">
+        <div class="mb-3">
+            <label class="form-label">Game Mode</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="mode" value="simulation" checked>
+                <label class="form-check-label">Simulation (Host plays)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="mode" value="competition">
+                <label class="form-check-label">Competition (Host observes)</label>
+            </div>
+        </div>
+        <div class="mb-3">
+          <label for="room_name" class="form-label">Room Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="room_name"
+            name="room_name"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Create Room</button>
+      </form>
+    </div>
+
+    <div class="col-md-8 text-center">
+      <h3>Available Rooms (Waiting)</h3>
+      <div class="room-list" style="max-height: 500px; overflow-y: auto">
+
+        {% if rooms_with_counts %}
+
+            {% for room, player_count in rooms_with_counts %}
+            <div class="room-card">
+              <div>
+                <div class="room-name">{{ room.room_name }}
+                  {% if room.mode == 'competition' %}
+                    <span class="badge bg-warning text-dark" style="font-size: 0.6em; vertical-align: middle;">Competition</span>
+                  {% else %}
+                    <span class="badge bg-info text-dark" style="font-size: 0.6em; vertical-align: middle;">Simulation</span>
+                  {% endif %}
+                </div>
+                <div class="room-host">Host: {{ room.host.first_name }}</div>
+              </div>
+              <a
+                href="{{ url_for('views.game_lobby', room_id=room.id) }}"
+                class="btn btn-success"
+              >
+                Join ({{ player_count }} players)
+              </a>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <p class="text-muted">No available rooms. Why not create one?</p>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

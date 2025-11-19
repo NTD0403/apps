@@ -1,0 +1,39 @@
+{% extends "base.html" %} {% block title %}Result{% endblock %} {% block content
+%}
+<h3 class="text-center">{{ output }}</h3>
+<div
+  class="image-container"
+  style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  "
+>
+  <div class="text-center" style="flex-basis: 300px">
+    <img
+      src="{{ url_for('static', filename='images/map.png') }}"
+      alt="Indeed Map"
+      style="width: 100%; height: auto; border-radius: 10px"
+    />
+    <p>Indeed Map</p>
+  </div>
+
+  {% if plot_image %}
+  <div class="text-center" style="flex-basis: 400px">
+    <img
+      src="data:image/png;base64,{{ plot_image }}"
+      alt="Plotified Map"
+      style="
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+      "
+    />
+    <p>Plotified Map</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

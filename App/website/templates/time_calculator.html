@@ -1,0 +1,33 @@
+{% extends "base.html" %} {% block title %}Time Calculator{% endblock %} {%
+block content %}
+<form method="POST" class="mt-4">
+  <h3 class="text-center">Type your coordinates to process the trail's time</h3>
+
+  <div class="mb-3">
+    <label for="start_coordinate" class="form-label">Start coordinate</label>
+    <input
+      type="text"
+      class="form-control"
+      id="start_coordinate"
+      name="start_coordinate"
+      placeholder="Enter your start's coordinate"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="end_coordinate" class="form-label">End coordinate</label>
+    <input
+      type="text"
+      class="form-control"
+      id="end_coordinate"
+      name="end_coordinate"
+      placeholder="Enter your end's coordinate"
+    />
+  </div>
+
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary">Calculate</button>
+  </div>
+</form>
+
+{% endblock %}

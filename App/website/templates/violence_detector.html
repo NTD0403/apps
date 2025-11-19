@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block title %}Violence Detector{% endblock %} {%
+block content %}
+<form method="POST" class="mt-4">
+  <h3 class="text-center">
+    Type the data of player 1 and 2 to detect their violence
+  </h3>
+
+  <div class="mb-3">
+    <label for="start_coordinate_of_player_1" class="form-label"
+      >Start coordinate of player 1</label
+    >
+    <input
+      type="text"
+      class="form-control"
+      id="start_coordinate_of_player_1"
+      name="start_coordinate_of_player_1"
+      placeholder="Enter the start's trail coordinate of player 1"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="end_coordinate_of_player_1" class="form-label"
+      >End coordinate of player 1</label
+    >
+    <input
+      type="text"
+      class="form-control"
+      id="end_coordinate_of_player_1"
+      name="end_coordinate_of_player_1"
+      placeholder="Enter the end's trail coordinate of player 1"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="location_of_player_2" class="form-label"
+      >Location of player 2</label
+    >
+    <input
+      type="text"
+      class="form-control"
+      id="location_of_player_2"
+      name="location_of_player_2"
+      placeholder="Enter the location of player 2"
+    />
+  </div>
+
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary">Detect</button>
+  </div>
+</form>
+{% endblock %}

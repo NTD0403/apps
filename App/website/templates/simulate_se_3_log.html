@@ -1,0 +1,93 @@
+{% extends "base.html" %} {% block title %}Game Log{% endblock %} {% block
+content %}
+<style>
+  .log-entry {
+    border-bottom: 1px solid #eee;
+    padding: 10px 5px;
+    font-size: 0.95em;
+  }
+  .log-time {
+    color: #888;
+    font-weight: bold;
+    min-width: 180px;
+    display: inline-block;
+  }
+  .log-user {
+    color: #007bff;
+    font-weight: bold;
+  }
+  .log-message {
+    color: #333;
+  }
+</style>
+
+<div class="container" style="margin-top: 30px">
+  <h1 class="text-center">📜 Game Log (Live)</h1>
+  <h4 class="text-center text-muted">Auto Update</h4>
+
+  <div
+    id="log-container-live"
+    class="log-container"
+    style="
+      margin-top: 30px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 200px;
+    "
+  >
+    <p class="text-center text-muted">Log loading.....</p>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const logContainer = document.getElementById("log-container-live");
+
+    async function fetchAndUpdateLogs() {
+      try {
+        const response = await fetch("/api/get_logs");
+        if (!response.ok) {
+          throw new Error("Network error when call API");
+        }
+        const logs = await response.json();
+
+        logContainer.innerHTML = "";
+
+        if (logs.length === 0) {
+          logContainer.innerHTML =
+            '<p class="text-center text-muted">There is no action to log</p>';
+          return;
+        }
+
+        logs.forEach((log) => {
+          const logEntry = document.createElement("div");
+          logEntry.className = "log-entry";
+
+          const logTime = document.createElement("span");
+          logTime.className = "log-time";
+          logTime.textContent = log.timestamp;
+
+          const logMessage = document.createElement("span");
+          logMessage.className = "log-message";
+          logMessage.textContent = " " + log.message;
+
+          logEntry.appendChild(logTime);
+          logEntry.appendChild(logMessage);
+
+          logContainer.appendChild(logEntry);
+        });
+      } catch (error) {
+        console.error("Error occur while loading log", error);
+        logContainer.innerHTML =
+          '<p class="text-center text-danger">Can not load log. Please refresh the page</p>';
+      }
+    }
+
+    fetchAndUpdateLogs();
+
+    setInterval(fetchAndUpdateLogs, 10000);
+  });
+</script>
+{% endblock %}

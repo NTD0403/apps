@@ -1,0 +1,97 @@
+{% extends "base.html" %} {% block title %}Profile{% endblock %} {% block
+content %}
+<style>
+  .profile-card {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #dee2e6;
+    margin-bottom: 15px;
+  }
+
+  .profile-header h3 {
+    margin-top: 15px;
+    font-weight: 600;
+  }
+</style>
+
+<div class="profile-card">
+  <form method="POST" enctype="multipart/form-data">
+    <div class="profile-header text-center">
+      <img
+        src="{{ url_for('static', filename='avatars/' + user.avatar_image) }}"
+        alt="User Avatar"
+        class="profile-avatar"
+        onerror="this.onerror=null; this.src='{{ url_for('static', filename='avatars/default.jpg') }}';"
+      />
+
+      <h3>{{ user.first_name }}</h3>
+      <p class="text-muted">{{ user.email }}</p>
+    </div>
+
+    <div class="mb-3">
+      <label for="first_name" class="form-label">First Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="first_name"
+        name="first_name"
+        value="{{ user.first_name }}"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="dob" class="form-label">Date of Birth</label>
+      <input
+        type="date"
+        class="form-control"
+        id="dob"
+        name="dob"
+        value="{{ user.date_of_birth.strftime('%Y-%m-%d') if user.date_of_birth else '' }}"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email (Cannot be changed)</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        value="{{ user.email }}"
+        disabled
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="avatar" class="form-label">Change Avatar</label>
+      <input
+        type="file"
+        class="form-control"
+        id="avatar"
+        name="avatar"
+        accept="image/png, image/jpeg, image/jpg"
+      />
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

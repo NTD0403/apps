@@ -1,0 +1,248 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
+<style>
+  .music-player-card {
+    width: 350px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin: 20px;
+  }
+
+  .music-player-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .music-player-card audio {
+    width: 100%;
+    display: block;
+  }
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    padding-top: 1rem;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    overflow-y: auto;
+  }
+
+  .sidebar .nav-link {
+    color: #333;
+    padding: 8px 16px;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .sidebar .nav-link:hover {
+    background-color: #e9ecef;
+    color: #000;
+  }
+
+  .sidebar .nav-link.active {
+    font-weight: 600;
+    background-color: #dee2e6;
+  }
+
+  .sidebar .submenu {
+    padding-left: 1.5rem;
+  }
+
+  .sidebar .submenu .nav-link {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    font-size: 0.9em;
+    color: #555;
+  }
+
+  .sidebar .nav-link[data-bs-toggle="collapse"]::after {
+    content: " ▾";
+    float: right;
+  }
+
+  .main-content {
+    margin-left: 220px;
+    padding: 2rem;
+  }
+  .image-container-flex {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+</style>
+<div class="sidebar">
+  <h5 class="px-3 mb-3">🏠 Selections</h5>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link" id="add_note" href="/add_note">📝 Add notes</a>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        href="#settings-submenu1"
+        data-bs-toggle="collapse"
+        role="button"
+        aria-expanded="false"
+        aria-controls="settings-submenu1"
+        >🎲 Entertainments</a
+      >
+      <div class="collapse submenu" id="settings-submenu1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="#settings-submenu2"
+              data-bs-toggle="collapse"
+              role="button"
+              aria-expanded="false"
+              aria-controls="settings-submenu2"
+              >⚙️ Special Exams</a
+            >
+            <div class="collapse submenu" id="settings-submenu2">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a
+                    class="nav-link"
+                    href="#settings-submenu3"
+                    data-bs-toggle="collapse"
+                    role="button"
+                    aria-expanded="false"
+                    aria-controls="settings-submenu3"
+                    >🏃‍♂️ Special Exam 3</a
+                  >
+                  <div class="collapse submenu" id="settings-submenu3">
+                    <ul class="nav flex-column">
+                      <li class="nav-item">
+                        <a
+                          class="nav-link"
+                          href="#settings-submenu6"
+                          data-bs-toggle="collapse"
+                          role="button"
+                          aria-expanded="false"
+                          aria-controls="settings-submenu6"
+                          >📜 Rules of the exam</a
+                        >
+                        <div class="collapse submenu" id="settings-submenu6">
+                          <ul class="nav flex-column">
+                            <li class="nav-item">
+                              <a class="nav-link" href="/about_se_3_eng"
+                                >💬 English Version</a
+                              >
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" href="/about_se_3_vie"
+                                >🖋️ Vietnamese Version</a
+                              >
+                            </li>
+                          </ul>
+                        </div>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href="/time_calculator"
+                          >⏲️ Time Calculator</a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/violence_detector"
+                          >💥 Violence Detector</a
+                        >
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href="/rooms">🔬 Simulation</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="/leaderboard"
+                          >🏆 Leaderboard</a
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link"
+        href="#settings-submenu4"
+        data-bs-toggle="collapse"
+        role="button"
+        aria-expanded="false"
+        aria-controls="settings-submenu4"
+        >🎓 Academic Problems</a
+      >
+      <div class="collapse submenu" id="settings-submenu4">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="#settings-submenu5"
+              data-bs-toggle="collapse"
+              role="button"
+              aria-expanded="false"
+              aria-controls="settings-submenu5"
+              >📊 Mathematic Bases</a
+            >
+            <div class="collapse submenu" id="settings-submenu5">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a
+                    class="nav-link protected-link"
+                    id="linear"
+                    href="#"
+                    data-destination="{{ url_for('views.linear') }}"
+                    >📈 Linearity (Vietnamese)</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/profile">👤 Profile</a>
+    </li>
+  </ul>
+</div>
+<div class="main-content">
+  <h1 class="text-center">Home</h1>
+  <p class="text-center text-muted">Ntd's web. Welcome!</p>
+<!--  <div class="image-container-flex">
+    <div class="music-player-card">
+      <img
+        src="{{ url_for('static', filename='images/kpl2.jpg') }}"
+        alt="Ảnh bìa"
+      />
+      <audio controls>
+        <source
+          src="{{ url_for('static', filename='sound/nhac2.mp3') }}"
+          type="audio/mpeg"
+        />
+      </audio>
+    </div>
+    <div class="music-player-card">
+      <img
+        src="{{ url_for('static', filename='images/kpl1.jpg') }}"
+        alt="Ảnh bìa"
+      />
+      <audio controls>
+        <source
+          src="{{ url_for('static', filename='sound/nhac1.mp3') }}"
+          type="audio/mpeg"
+        />
+      </audio>
+    </div>
+  </div> -->
+</div>
+{% endblock %}
